@@ -1,0 +1,27 @@
+# Relation: 법령 유권해석에 의한 추가 예외
+# 규약 제5조 ②: "제1항에도 불구하고..."
+
+relation_id: "rel-fc-003"
+type: excepts
+source_rule: "kmdia-fc-art5-p2-main"
+target_rule: "kmdia-fc-art5-p1-main"
+
+condition: >
+  의료법 제23조의2 제2항 또는 보건복지부령 의료기기 유통 및 판매질서 유지에 관한 규칙 제2조
+  관련 보건복지부 유권해석을 통해 보건의료인에게 제공 가능이 확인된 금품류
+
+resolution: >
+  유권해석이 확인된 금품류에 한하여 예외 적용.
+  반드시 해당 유권해석의 출처(보건복지부 회신 번호 등)를 함께 인용할 것.
+  유권해석이 확인되지 않은 경우 이 예외를 적용하지 말 것.
+
+authority_basis: >
+  규약 제5조 제2항 "제1항에도 불구하고... 보건복지부의 유권해석을 통해
+  보건의료인에게 제공할 수 있음이 확인된 금품류를 예외적으로
+  보건의료인에게 제공할 수 있다"
+
+registered_by: "HB"
+status: approved
+approval:
+  reviewer: "HB"
+  timestamp: "2026-03-02T12:00:00+09:00"

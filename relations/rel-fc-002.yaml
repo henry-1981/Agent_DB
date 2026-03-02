@@ -1,0 +1,27 @@
+# Relation: 기부행위는 금품류 제공 금지의 예외
+# 규약 제5조 ①: "다만, 제6조 내지 제17조에 해당하는 것으로서..."
+
+relation_id: "rel-fc-002"
+type: excepts
+source_rule: "kmdia-fc-art7-p1-main"
+target_rule: "kmdia-fc-art5-p1-main"
+
+condition: >
+  기부행위 AND 사회통념상 인정되는 범위 내
+  AND 의학적·교육적·자선적 목적 AND 의학·의료기기 연구기관 등 대상
+
+resolution: >
+  조건 충족 시 art7-p1-main을 인용하여 기부행위 허용.
+  반드시 art5-p1-main의 금품류 제공 금지 원칙과
+  art7-p1-item1의 금지 조건을 함께 검토할 것.
+
+authority_basis: >
+  규약 제5조 제1항 단서 "제6조 내지 제17조에 해당하는 것으로서
+  사회통념상 정상적 상관례로 인정될 수 있는 범위 내의 것은
+  그러하지 아니하다" (제7조는 제6조~제17조 범위 내)
+
+registered_by: "HB"
+status: approved
+approval:
+  reviewer: "HB"
+  timestamp: "2026-03-02T12:00:00+09:00"

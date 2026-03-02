@@ -1,0 +1,28 @@
+# Relation: 유권해석 미확인 금품류 — 구조적으로 해소 불가
+# 제5조 ②의 예외 적용 여부를 자동 판단할 수 없는 경우
+
+relation_id: "rel-fc-005"
+type: unresolved
+source_rule: "kmdia-fc-art5-p2-main"
+target_rule: "kmdia-fc-art5-p1-main"
+
+condition: >
+  특정 금품류가 의료법·보건복지부령 유권해석 대상인지 여부가 불확실하거나,
+  유권해석이 아직 나오지 않은 새로운 유형의 금품류인 경우
+
+resolution: >
+  Agent는 이 금품류의 제공 가부를 자동 판단하지 말 것.
+  "해당 금품류에 대한 보건복지부 유권해석이 확인되지 않아
+  제5조 제2항 예외 적용 여부를 판단할 수 없습니다.
+  RA팀에 유권해석 확인을 요청하십시오." 로 에스컬레이션할 것.
+
+authority_basis: >
+  규약 제5조 제2항의 예외는 보건복지부 유권해석이 전제 조건이므로,
+  유권해석이 없는 금품류에 대해 Agent가 허용/금지를 판단하는 것은
+  근거 없는 판단에 해당
+
+registered_by: "HB"
+status: approved
+approval:
+  reviewer: "HB"
+  timestamp: "2026-03-02T12:00:00+09:00"

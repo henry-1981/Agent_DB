@@ -1,0 +1,27 @@
+# Relation: 견본품 제공은 금품류 제공 금지의 예외
+# 규약 제5조 ①: "다만, 제6조 내지 제17조에 해당하는 것으로서..."
+
+relation_id: "rel-fc-001"
+type: excepts
+source_rule: "kmdia-fc-art6-p1-main"
+target_rule: "kmdia-fc-art5-p1-main"
+
+condition: >
+  견본품으로 제공 AND 최소 포장 단위에 '견본품' 또는 'sample' 표시
+  AND 해당 의료기기 특성 확인에 필요한 최소수량·최소기간 이내
+
+resolution: >
+  조건 충족 시 art6-p1-main을 인용하여 견본품 제공 허용.
+  반드시 art5-p1-main의 금품류 제공 금지 원칙도 함께 인용하여
+  예외 사유를 명시할 것.
+
+authority_basis: >
+  규약 제5조 제1항 단서 "제6조 내지 제17조에 해당하는 것으로서
+  사회통념상 정상적 상관례로 인정될 수 있는 범위 내의 것은
+  그러하지 아니하다"
+
+registered_by: "HB"
+status: approved
+approval:
+  reviewer: "HB"
+  timestamp: "2026-03-02T12:00:00+09:00"

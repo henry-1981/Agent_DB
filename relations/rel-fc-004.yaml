@@ -1,0 +1,28 @@
+# Relation: 기부행위 금지 조건이 기부 허용 원칙을 제한
+# 제7조 ①-1호: "다음 각 목에 해당하는 기부행위는 허용되지 아니한다"
+
+relation_id: "rel-fc-004"
+type: excepts
+source_rule: "kmdia-fc-art7-p1-item1"
+target_rule: "kmdia-fc-art7-p1-main"
+
+condition: >
+  기부행위가 제1호 가~라목 중 하나에 해당하는 경우:
+  가. 거래 관련 이익이 약속된 경우,
+  나. 거래 영향을 고려하여 기부요청에 응하는 경우,
+  다. 기관 자기부담 비용(부동산·비품·시설 등)에 충당되는 경우,
+  라. 정당한 이유 없이 동일 기관에 반복·지속적 기부하는 경우
+
+resolution: >
+  가~라목 중 하나라도 해당하면 기부 불허.
+  art7-p1-item1을 인용하여 해당 금지 사유를 명시하고,
+  art7-p1-main의 허용 원칙이 적용되지 않음을 설명할 것.
+
+authority_basis: >
+  규약 제7조 제1항 제1호가 동조 본문의 기부 허용에 대한 금지 요건을 규정
+
+registered_by: "HB"
+status: approved
+approval:
+  reviewer: "HB"
+  timestamp: "2026-03-02T12:00:00+09:00"
