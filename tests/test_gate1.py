@@ -3,7 +3,7 @@
 import pytest
 import yaml
 
-from gate1 import check_schema, check_duplicates
+from gate1 import check_schema, check_duplicates, check_source_ref, run_gate1
 
 
 def test_valid_rule_passes_schema(sample_rule):
@@ -73,3 +73,56 @@ def test_similar_but_below_threshold_passes():
     }
     errors = check_duplicates(candidate, existing)
     assert errors == []
+
+
+# --- source_ref integrity tests ---
+
+
+def test_valid_source_ref_passes():
+    rule = {
+        "source_ref": {"document": "kmdia-fc", "version": "2022.04", "location": "제1조"},
+    }
+    errors = check_source_ref(rule)
+    assert errors == []
+
+
+def test_unknown_document_fails():
+    rule = {
+        "source_ref": {"document": "nonexistent", "version": "2022.04", "location": "제1조"},
+    }
+    errors = check_source_ref(rule)
+    assert len(errors) == 1
+    assert "nonexistent" in errors[0]
+
+
+def test_unknown_version_fails():
+    rule = {
+        "source_ref": {"document": "kmdia-fc", "version": "9999.99", "location": "제1조"},
+    }
+    errors = check_source_ref(rule)
+    assert len(errors) == 1
+
+
+# --- Gate orchestrator tests ---
+
+
+def test_run_gate1_passes_valid_draft(sample_rule, root):
+    result = run_gate1(sample_rule, root)
+    assert result["passed"] is True
+    assert result["new_status"] == "verified"
+    assert result["errors"] == []
+
+
+def test_run_gate1_rejects_invalid(sample_rule, root):
+    del sample_rule["scope"]
+    result = run_gate1(sample_rule, root)
+    assert result["passed"] is False
+    assert result["new_status"] == "rejected"
+    assert len(result["errors"]) > 0
+
+
+def test_run_gate1_skips_non_draft(sample_rule, root):
+    sample_rule["status"] = "approved"
+    result = run_gate1(sample_rule, root)
+    assert result["passed"] is False
+    assert "draft" in result["errors"][0].lower()
