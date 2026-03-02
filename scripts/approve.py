@@ -15,9 +15,12 @@ from pathlib import Path
 
 import yaml
 
+from domain import load_g2_checklist_items
+
 ROOT = Path(__file__).resolve().parent.parent
 
-G2_CHECKLIST_ITEMS = [
+# Default G2 checklist items (used when domain config is absent)
+_DEFAULT_G2_CHECKLIST_ITEMS = [
     "semantic_accuracy",
     "scope_completeness",
     "authority_correctness",
@@ -25,10 +28,30 @@ G2_CHECKLIST_ITEMS = [
 ]
 
 
-def validate_g2_checklist(checklist: dict) -> list[str]:
-    """Validate that all 4 G2 checklist items are present."""
+def _get_g2_checklist_items(
+    domain: str | None = None, root: Path | None = None
+) -> list[str]:
+    """Load G2 checklist items for domain. Falls back to default."""
+    if domain:
+        items = load_g2_checklist_items(domain, root)
+        if items:
+            return items
+    return _DEFAULT_G2_CHECKLIST_ITEMS
+
+
+def validate_g2_checklist(
+    checklist: dict,
+    domain: str | None = None,
+    root: Path | None = None,
+) -> list[str]:
+    """Validate that all G2 checklist items are present.
+
+    Loads required items from domain config if domain is specified,
+    otherwise uses the default RA checklist.
+    """
+    items = _get_g2_checklist_items(domain, root)
     errors = []
-    for item in G2_CHECKLIST_ITEMS:
+    for item in items:
         if item not in checklist:
             errors.append(f"missing checklist item: {item}")
         elif checklist[item] not in ("pass", "fail"):
@@ -94,7 +117,7 @@ def batch_approve(reviewer: str = "HB") -> tuple[int, int]:
     Returns (approved_count, total_verified).
     """
     rules_dir = ROOT / "rules"
-    checklist = {item: "pass" for item in G2_CHECKLIST_ITEMS}
+    checklist = {item: "pass" for item in _DEFAULT_G2_CHECKLIST_ITEMS}
 
     verified = []
     for path in sorted(rules_dir.rglob("*.yaml")):
@@ -154,7 +177,7 @@ def main():
         print(f"Scope: {rule.get('scope', [])}")
 
         checklist = {}
-        for item in G2_CHECKLIST_ITEMS:
+        for item in _DEFAULT_G2_CHECKLIST_ITEMS:
             label = item.replace("_", " ").title()
             while True:
                 val = input(f"  {label} (pass/fail/skip) [pass]: ").strip().lower() or "pass"

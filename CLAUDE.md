@@ -37,6 +37,23 @@ AI에 문서를 통째로 넣으면 토큰 과소비 + 환각이 발생한다.
 - **Rule DB**: 정규화된 규칙 단위의 저장·버전 관리·메타데이터·관계
 - **검색/참조 API**: Agent와 사람이 규칙을 찾고 인용하는 인터페이스
 
+### 도메인 플러그인 모델 (Phase B)
+
+authority, G2 체크리스트 등 도메인 특화 항목은 config로 분리. 코어 로직은 도메인 비종속.
+
+```
+domains/
+  {domain}/
+    authority_levels.yaml   # 강제력 등급 계층 (gate1 런타임 검증)
+    gate2_checklist.yaml    # G2 인간 승인 체크리스트 항목
+    rule_id_convention.md   # rule_id 네이밍 규칙
+rules/_domain.yaml          # 기본 도메인 마커 (현재: ra)
+```
+
+- `scripts/domain.py`: 도메인 해석 (rule.domain → `_domain.yaml` → fallback)
+- `authority` 검증: 스키마 enum 아님 → `gate1.py check_authority()`가 런타임에 domain config 참조
+- `gate2_checklist`: `approve.py`가 domain config에서 항목 로드 (없으면 RA default 폴백)
+
 ---
 
 ## Rule Unit Schema
@@ -51,7 +68,7 @@ AI에 문서를 통째로 넣으면 토큰 과소비 + 환각이 발생한다.
 | `text` | string (원문 그대로) | 원문 부재 → Agent가 생성 → 환각 |
 | `source_ref` | object | 출처 검증 불가 → 근거 사슬 끊김 |
 | `scope` | string[] | 적용 조건 부재 → 무관한 규칙 매칭 |
-| `authority` | enum | 규칙 충돌 시 우선순위 판단 불가 |
+| `authority` | string (도메인 config) | 규칙 충돌 시 우선순위 판단 불가 |
 | `status` | enum | 폐지된 규칙 인용 → 잘못된 기안 |
 
 ```yaml
@@ -63,7 +80,7 @@ source_ref:
   location: "제7조 제1항"
 scope:
   - "의료기기 거래 관련 경제적 이익 제공"
-authority: regulation   # law > regulation > sop > guideline > precedent
+authority: regulation   # domains/ra/authority_levels.yaml에서 유효성 검증
 status: approved
 ```
 
@@ -108,6 +125,13 @@ registered_by: "RA팀장"
 ### `unresolved`의 존재 의의
 
 Agent에게 "여기서 멈춰라"는 명시적 신호. 이 타입이 없으면 Agent는 authority 등급만 보고 자동 판단하여 실무적 재앙을 초래할 수 있음 (예: SOP 미갱신 상태에서 개정 고시를 일괄 적용).
+
+### Relation 상태와 Orphan Cascade
+
+Relation 스키마에 `suspended` 상태 추가. Rule Unit이 suspended/superseded되면:
+- `scripts/cascade.py --check`: 고아 관계 탐지 (dry-run)
+- `scripts/cascade.py --apply`: approved → suspended, draft/verified → rejected로 전이
+- 전이 사유(`suspension_reason`)를 기록하여 도메인 소유자가 재검토 가능
 
 ---
 
@@ -157,11 +181,12 @@ Agent에게 "여기서 멈춰라"는 명시적 신호. 이 타입이 없으면 A
 
 사람 개입 없이 통과/실패 판정.
 
-- **텍스트 충실도**: 원본 PDF 재추출 후 diff (character similarity ≥ 0.95)
 - **스키마 완전성**: 6개 필수 필드 유효성 (JSON Schema validation)
-- **중복 탐지**: text similarity ≥ 0.90이면 reject
 - **source_ref 무결성**: 원천 문서 목록에 존재 여부
-- **scope-text 정합성**: scope 항목이 text에서 도출 가능한지 (LLM 판정, 실패 시 reject이 아닌 G2로 flag)
+- **authority 검증**: 도메인 config (`domains/{domain}/authority_levels.yaml`) 대비 런타임 유효성 검사
+- **중복 탐지**: text similarity ≥ 0.90이면 reject
+- **[Stub] 텍스트 충실도**: 원본 PDF 재추출 후 diff (character similarity ≥ 0.95)
+- **[Stub] scope-text 정합성**: scope 항목이 text에서 도출 가능한지 (LLM 판정)
 
 ### Gate 2: 인간 승인 (verified → approved)
 
@@ -229,9 +254,27 @@ pytest tests/
 pytest tests/test_clean.py::TestFilterP4P7::test_page_number_patterns  # 단일 테스트
 ```
 
+## Current State (2026-03-02)
+
+- **23 approved Rule Units** (kmdia-fc 18 + kmdia-fc-detail 5)
+- **5 approved Rule Relations** (excepts 4 + unresolved 1)
+- **54 tests** 전부 통과
+- **도메인 플러그인** Phase B 완료 (domains/ra/)
+
+### 유틸리티 스크립트
+
+| 스크립트 | 용도 |
+|----------|------|
+| `scripts/gate1.py [--apply]` | G1 자동검증 (draft → verified) |
+| `scripts/approve.py [--batch]` | G2 인간 승인 (verified → approved) |
+| `scripts/retrieve.py "<query>"` | Agent 검색+인용 |
+| `scripts/cascade.py [--check\|--apply]` | Orphan Relation cascade |
+| `scripts/scope_monitor.py [--warn]` | Scope 오염 조기 경보 |
+| `scripts/context.py <rule_id>` | Traceability 계층 조회 |
+
 ## Conventions
 
 - 커밋 메시지: 한국어, conventional commit
 - 코드 코멘트: 영어
 - Python ≥ 3.11
-- 의존성: pymupdf, pyyaml, anthropic, pytest
+- 의존성: pymupdf, pyyaml, anthropic, pytest, jsonschema

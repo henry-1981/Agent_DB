@@ -1,0 +1,15 @@
+# RA domain authority levels (strongest to weakest).
+# Used by gate1.py check_authority() for runtime validation.
+# Each domain defines its own hierarchy in this format.
+
+levels:
+  - law
+  - regulation
+  - sop
+  - guideline
+  - precedent
+
+description: >
+  의료기기 RA 규제 문서의 강제력 등급 계층.
+  law (법률) > regulation (규약/규칙) > sop (내부절차)
+  > guideline (지침) > precedent (선례)

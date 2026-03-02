@@ -67,15 +67,19 @@ properties:
 
   authority:
     type: string
-    enum:
-      - law
-      - regulation
-      - sop
-      - guideline
-      - precedent
+    minLength: 1
     description: >
       Binding force of this rule. Determines precedence when rules conflict.
-      law > regulation > sop > guideline > precedent
+      Valid values are defined per domain in domains/{domain}/authority_levels.yaml.
+      Validated at runtime by gate1.py check_authority().
+
+  domain:
+    type: string
+    pattern: "^[a-z][a-z0-9\\-]*$"
+    description: >
+      Domain this rule belongs to. Used to resolve authority levels
+      and G2 checklist items from domains/{domain}/ config.
+      Optional — inferred from rules/_domain.yaml if absent.
 
   status:
     type: string
@@ -109,25 +113,12 @@ properties:
         format: date-time
       gate2_checklist:
         type: object
-        required:
-          - semantic_accuracy
-          - scope_completeness
-          - authority_correctness
-          - relation_validity
-        properties:
-          semantic_accuracy:
-            type: string
-            enum: [pass, fail]
-          scope_completeness:
-            type: string
-            enum: [pass, fail]
-          authority_correctness:
-            type: string
-            enum: [pass, fail]
-          relation_validity:
-            type: string
-            enum: [pass, fail]
-        additionalProperties: false
+        description: >
+          Domain-specific checklist items. Required items are validated
+          at runtime by approve.py using domains/{domain}/gate2_checklist.yaml.
+        additionalProperties:
+          type: string
+          enum: [pass, fail]
       notes:
         type: string
     additionalProperties: false

@@ -1,0 +1,17 @@
+# RA domain G2 checklist items.
+# Used by approve.py for domain-specific G2 validation.
+# Each domain defines which checklist items are required for human approval.
+
+items:
+  - id: semantic_accuracy
+    label: "의미 정확성"
+    description: "text가 원문 규칙의 의도를 왜곡 없이 담고 있는가"
+  - id: scope_completeness
+    label: "scope 완전성"
+    description: "적용 조건이 빠짐없이 포착되었는가"
+  - id: authority_correctness
+    label: "authority 적정성"
+    description: "강제력 등급이 실제 법적 효력과 일치하는가"
+  - id: relation_validity
+    label: "관계 정당성"
+    description: "연결된 관계가 올바른가"

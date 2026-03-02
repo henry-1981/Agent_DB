@@ -2,10 +2,11 @@
 
 Checks (draft -> verified):
 1. Schema completeness (JSON Schema validation)
-2. Duplicate detection (text similarity >= 0.90 -> reject)
-3. source_ref integrity (document + version exist in registry)
-4. [Stub] Text fidelity (PDF re-extraction, requires pipeline integration)
-5. [Stub] scope-text consistency (LLM judgment, flags for G2)
+2. source_ref integrity (document + version exist in registry)
+3. Authority validation (value exists in domain config)
+4. Duplicate detection (text similarity >= 0.90 -> reject)
+5. [Stub] Text fidelity (PDF re-extraction, requires pipeline integration)
+6. [Stub] scope-text consistency (LLM judgment, flags for G2)
 """
 
 from difflib import SequenceMatcher
@@ -13,6 +14,8 @@ from pathlib import Path
 
 import jsonschema
 import yaml
+
+from domain import resolve_domain, load_authority_levels
 
 ROOT = Path(__file__).resolve().parent.parent
 SCHEMA_PATH = ROOT / "schemas" / "rule-unit.schema.yaml"
@@ -77,6 +80,25 @@ def _load_sources(root: Path | None = None) -> dict[str, list[str]]:
     return sources
 
 
+def check_authority(rule: dict, root: Path | None = None) -> list[str]:
+    """Validate authority value against domain config."""
+    domain = resolve_domain(rule, root)
+    if domain is None:
+        return ["cannot resolve domain for authority validation"]
+
+    levels = load_authority_levels(domain, root)
+    if not levels:
+        return [f"no authority_levels.yaml found for domain '{domain}'"]
+
+    authority = rule.get("authority", "")
+    if authority not in levels:
+        return [
+            f"authority '{authority}' not valid for domain '{domain}'. "
+            f"Valid levels: {levels}"
+        ]
+    return []
+
+
 def check_source_ref(rule: dict, root: Path | None = None) -> list[str]:
     """Verify source_ref.document and version exist in registry."""
     sources = _load_sources(root)
@@ -137,7 +159,10 @@ def run_gate1(rule: dict, root: Path | None = None) -> dict:
     # Check 2: source_ref
     errors.extend(check_source_ref(rule, root))
 
-    # Check 3: Duplicates
+    # Check 3: Authority against domain config
+    errors.extend(check_authority(rule, root))
+
+    # Check 4: Duplicates
     existing = _load_existing_rules(root)
     errors.extend(check_duplicates(rule, existing))
 

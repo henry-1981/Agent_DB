@@ -82,11 +82,20 @@ properties:
       - draft
       - verified
       - approved
+      - suspended
       - rejected
     description: >
       Relations require stricter approval than Rule Units.
       Only 'supersedes' can be auto-verified.
       overrides/excepts/unresolved require human approval.
+      'suspended' is set by cascade when a referenced Rule Unit changes status.
+
+  suspension_reason:
+    type: string
+    description: >
+      Why this relation was suspended. Typically because a referenced
+      Rule Unit changed status (suspended/superseded).
+      Required when status is 'suspended'.
 
   approval:
     type: object
@@ -105,10 +114,18 @@ properties:
 
 additionalProperties: false
 
-if:
-  properties:
-    status:
-      const: approved
-then:
-  required:
-    - approval
+allOf:
+  - if:
+      properties:
+        status:
+          const: approved
+    then:
+      required:
+        - approval
+  - if:
+      properties:
+        status:
+          const: suspended
+    then:
+      required:
+        - suspension_reason

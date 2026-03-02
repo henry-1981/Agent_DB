@@ -1,0 +1,36 @@
+# Traceability Link JSON Schema (YAML format)
+# Validates structural hierarchy between Rule Units within the same document.
+
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: "https://agent-db.local/schemas/traceability.schema.yaml"
+title: Traceability Link
+description: >
+  Structural hierarchy between Rule Units within the same document.
+  The default structure is parent-children, but domains may add
+  custom metadata via additionalProperties.
+
+type: object
+required:
+  - parent
+  - children
+
+properties:
+  parent:
+    type: string
+    description: rule_id of the parent Rule Unit
+  children:
+    type: array
+    items:
+      type: string
+    description: rule_ids of child Rule Units
+  hierarchy_type:
+    type: string
+    description: >
+      Optional label for the hierarchy type.
+      Examples: "조-항-호", "section-clause", "standard-paragraph".
+      Defaults to generic "parent-children" if absent.
+  domain:
+    type: string
+    description: Domain this traceability link belongs to.
+
+additionalProperties: true

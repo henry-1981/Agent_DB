@@ -71,3 +71,30 @@ def test_apply_approval_only_verified(sample_rule):
     }
     result = apply_approval(sample_rule, "HB", checklist)
     assert result["status"] == "draft"  # unchanged
+
+
+# --- Domain-aware G2 checklist tests ---
+
+
+def test_g2_checklist_loads_from_domain_config(root):
+    """When domain is specified, loads checklist from domain config."""
+    checklist = {
+        "semantic_accuracy": "pass",
+        "scope_completeness": "pass",
+        "authority_correctness": "pass",
+        "relation_validity": "pass",
+    }
+    errors = validate_g2_checklist(checklist, domain="ra", root=root)
+    assert errors == []
+
+
+def test_g2_checklist_falls_back_to_default():
+    """Without domain, uses default checklist items."""
+    checklist = {
+        "semantic_accuracy": "pass",
+        "scope_completeness": "pass",
+        "authority_correctness": "pass",
+        "relation_validity": "pass",
+    }
+    errors = validate_g2_checklist(checklist, domain=None)
+    assert errors == []

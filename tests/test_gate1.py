@@ -3,7 +3,7 @@
 import pytest
 import yaml
 
-from gate1 import check_schema, check_duplicates, check_source_ref, run_gate1
+from gate1 import check_schema, check_duplicates, check_source_ref, check_authority, run_gate1
 
 
 def test_valid_rule_passes_schema(sample_rule):
@@ -18,10 +18,26 @@ def test_missing_required_field_fails(sample_rule):
     assert "scope" in errors[0].lower() or "required" in errors[0].lower()
 
 
-def test_invalid_authority_fails(sample_rule):
+def test_invalid_authority_passes_schema(sample_rule):
+    """Authority is validated at runtime (check_authority), not schema level."""
     sample_rule["authority"] = "invalid_level"
     errors = check_schema(sample_rule)
+    assert errors == []
+
+
+def test_invalid_authority_fails_runtime(sample_rule, root):
+    """Runtime check_authority catches invalid values via domain config."""
+    sample_rule["authority"] = "invalid_level"
+    errors = check_authority(sample_rule, root)
     assert len(errors) >= 1
+    assert "invalid_level" in errors[0]
+
+
+def test_valid_ra_authority_passes_runtime(sample_rule, root):
+    """Valid RA authority value passes runtime check."""
+    sample_rule["authority"] = "regulation"
+    errors = check_authority(sample_rule, root)
+    assert errors == []
 
 
 def test_empty_text_fails(sample_rule):
