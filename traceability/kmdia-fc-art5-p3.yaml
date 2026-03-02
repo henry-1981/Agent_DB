@@ -1,0 +1,8 @@
+# Traceability Link: 제5조 제3항 구조적 계층
+# Rule Relation(의미적 충돌)과 별도로 조문의 구조적 parent-children 관계를 기록.
+# 검색 시 컨텍스트 복원에 사용: 특정 호를 반환할 때 본문(parent)도 함께 제공 가능.
+
+parent: "kmdia-fc-art5-p3-main"
+children:
+  - "kmdia-fc-art5-p3-item1"
+  - "kmdia-fc-art5-p3-item2"

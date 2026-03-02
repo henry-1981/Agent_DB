@@ -1,0 +1,28 @@
+rule_id: kmdia-fc-art6-p2-item2
+text: '2. 의료기관이 해당 제품의 적절한 사용 및 기능을 평가하고 장래 해당 제품의 사용, 주문,
+
+  구매 등의 의사를 결정할 수 있도록 하기 위해서 견본품을 제공하는 경우, 제품의 포장 및
+
+  첨부문서에 "환자에게 사용할 경우 그 비용을 별도로 청구할 수 없음"을 표기하고, 등
+
+  사항을 의료기관이 인지할 수 있도록 반드시 설명한 후 제공하여야 한다.
+
+  '
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제6조 제2항 제2호
+scope:
+- 평가용 견본품 제공 요건
+- 비용 별도 청구 불가 표기 의무
+- 의료기관 인지 설명 의무
+authority: regulation
+status: approved
+approval:
+  reviewer: HB
+  timestamp: '2026-03-02T10:00:23.861741+00:00'
+  gate2_checklist:
+    semantic_accuracy: pass
+    scope_completeness: pass
+    authority_correctness: pass
+    relation_validity: pass

@@ -1,0 +1,25 @@
+rule_id: kmdia-fc-art5-p4-main
+text: '④ 보건의료인의 가족, 친인척 등 특수관계인 또는 의 료기관 등과 특수관계에 있는 개인, 회사 또는 단체에 대한 금품류의 제공은 이를
+  해당 보건의료인 또는 의 료기관 등에 대한 제공으로 본다.
+
+  '
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제5조 제4항
+scope:
+- 특수관계인 간주 제공
+- 보건의료인의 가족·친인척
+- 의료기관 등과 특수관계에 있는 개인·회사·단체
+- 금품류 제공 대상 확장
+- 보건의료인·의료기관에 대한 제공으로 간주
+authority: regulation
+status: approved
+approval:
+  reviewer: HB
+  timestamp: '2026-03-02T10:00:23.858409+00:00'
+  gate2_checklist:
+    semantic_accuracy: pass
+    scope_completeness: pass
+    authority_correctness: pass
+    relation_validity: pass

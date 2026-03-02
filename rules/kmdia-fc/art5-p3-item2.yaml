@@ -1,0 +1,25 @@
+rule_id: kmdia-fc-art5-p3-item2
+text: '2. 사업자가 판매업자 등이나 마케팅 대행사가 의료기 관 등 또는 보건의료인에게 제공하는 것임을 인지할 수 있었음에도 고의 또는 중대한
+  과실로 이를 방지하 지 아니한 경우에 사업자가 판매업자 등이나 마케팅 대행사에게 그 금품류를 제공하는 경우를 말한다.
+
+  '
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제5조 제3항 제2호
+scope:
+- 간주 제공
+- 인지 가능성
+- 소극적 방조
+- 판매업자·마케팅 대행사를 통한 금품류 제공
+- 고의 또는 중대한 과실로 이를 방지하지 않은 경우
+authority: regulation
+status: approved
+approval:
+  reviewer: HB
+  timestamp: '2026-03-02T10:00:23.856370+00:00'
+  gate2_checklist:
+    semantic_accuracy: pass
+    scope_completeness: pass
+    authority_correctness: pass
+    relation_validity: pass

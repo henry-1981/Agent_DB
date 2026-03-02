@@ -1,0 +1,23 @@
+rule_id: kmdia-fc-art6-p2-item1
+text: '1. 해당 의료기기에 대하여 보건의료인 및 환자의 인지도 개선을 위한 시연 목적으로만 사용할 수 있도록 하는 견본품을 제공하려는 경우,
+  제품의 포장 및 첨부 문서에 "인체사용금지" 또는 그 밖에 환자에 대하여 사용이 금지된다는 사항을 표기하여 제공하여야 한다.
+
+  '
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제6조 제2항 제1호
+scope:
+- 시연용 견본품 제공 요건
+- 인체사용금지 표기 의무
+- 포장 및 첨부 문서 표기
+authority: regulation
+status: approved
+approval:
+  reviewer: HB
+  timestamp: '2026-03-02T10:00:23.860573+00:00'
+  gate2_checklist:
+    semantic_accuracy: pass
+    scope_completeness: pass
+    authority_correctness: pass
+    relation_validity: pass

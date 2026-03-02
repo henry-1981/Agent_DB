@@ -1,0 +1,26 @@
+rule_id: kmdia-fc-art6-p3-main
+text: "③ 평가용 제품 중 수회의 반복적 사용이 가능한 제품은 제1항 내지 제2항의 기준을\n준수하되 다음 각 호에 따라 적절한 평가를 위하여\
+  \ 합리적으로 필요한 최소한의\n기간(1개월이내) 동안만 제공되어야 한다.\n  1. 수회 반복적인 사용이 가능한 제품의 평가 기간을 포함한 평가조건은\
+  \ 사전에\n  서면으로 명시되어야 하며, 사업자 및 판매업자 등은 의료기관으로부터 해당\n  인수증을 받아야 한다.\n  2. 평가기간 동안\
+  \ 평가용 제품의 소유권은 사업자 및 판매업자 등에게 있으며,\n  이를 이전하여서는 아니된다.\n  3. 평가기간이 종료하면 의료기관이 해당\
+  \ 제품을 구매하거나 일치하지 않는 한,\n  해당 제품을 즉시 회수하여야 한다.\n"
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제6조 제3항
+scope:
+- 평가용 반복사용 가능 제품
+- 최소 기간 1개월 이내 제한
+- 서면 평가조건 명시 및 인수증
+- 소유권 유지 (이전 금지)
+- 평가기간 종료 후 회수 의무
+authority: regulation
+status: approved
+approval:
+  reviewer: HB
+  timestamp: '2026-03-02T10:00:23.864222+00:00'
+  gate2_checklist:
+    semantic_accuracy: pass
+    scope_completeness: pass
+    authority_correctness: pass
+    relation_validity: pass

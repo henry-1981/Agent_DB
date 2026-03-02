@@ -1,0 +1,22 @@
+rule_id: kmdia-fc-art6-p2-main
+text: '② 사업자 및 판매업자 등은 견본품을 시연과 평가 용으로 구분하여 제공할 수 있으며, 이 경우 다음 각 호의 원칙에 따른다.
+
+  '
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제6조 제2항 본문
+scope:
+- 견본품 구분 제공
+- 시연용 견본품
+- 평가용 견본품
+authority: regulation
+status: approved
+approval:
+  reviewer: HB
+  timestamp: '2026-03-02T10:00:23.862976+00:00'
+  gate2_checklist:
+    semantic_accuracy: pass
+    scope_completeness: pass
+    authority_correctness: pass
+    relation_validity: pass

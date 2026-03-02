@@ -1,0 +1,31 @@
+rule_id: kmdia-fc-detail-art3-p1-main
+text: '제3조 (견본품)
+
+  ① 규약 제6조의 "최소포장단위" 또는 "최소수량, 최소기간"은 자사의 최소포장단위 또는 최소수량단위로 하는 최소기간을 기준으로 하며, 해당 의료기기의
+  구매 전 의료기기의 성능을 확인하는데 필요한 최소한의 사용을 말한다. 다만, 그 기한은 1개월을 넘을 수 없나, 해당 의료기기의 사용을 위하여
+  관련 장비 및 소프트웨어의 설치, 사용법 교육 등에 상당한 기간이 필요한 경우에는, 그 상당한 기간 경과 후 해당 의료기기를 보건의료인이 실제로
+  사용할 수 있게 되는 날로부터 1개월의 기기간을 기산한다.
+
+  '
+source_ref:
+  document: kmdia-fc-detail
+  version: '2022.04'
+  location: 제3조 제1항
+scope:
+- 견본품 최소포장단위
+- 최소수량
+- 최소기간
+- 1개월 한도
+- 장비 설치 기간
+- 사용법 교육 기간
+- 의료기기 성능 확인
+authority: regulation
+status: approved
+approval:
+  reviewer: HB
+  timestamp: '2026-03-02T10:00:23.877067+00:00'
+  gate2_checklist:
+    semantic_accuracy: pass
+    scope_completeness: pass
+    authority_correctness: pass
+    relation_validity: pass

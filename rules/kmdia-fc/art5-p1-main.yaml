@@ -1,0 +1,26 @@
+rule_id: kmdia-fc-art5-p1-main
+text: '제5조 (금품류 제공의 제한) ① 사업자 및 판매업자 등은 의료기관 등 또는 보건의 료인에게 제3조 제13항에서 정한 금품류를 제공하여
+  서는 아니되고, 의료기관 등 또는 보건의료인의 금품 류 제공 요구에 응하여서도 아니된다. 다만, 제6조 내 지 제17조에 해당하는 것으로서 사회통념상
+  정상적 상관례로 인정될 수 있는 범위 내의 것은 그러하지 아 니하다.
+
+  '
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제5조 제1항
+scope:
+- 금품류 제공 금지 원칙
+- 사업자 및 판매업자의 의료기관·보건의료인 대상 금품류 제공 금지
+- 금품류 제공 요구 응대 금지
+- 제6조~제17조 예외 허용 범위
+- 사회통념상 정상적 상관례
+authority: regulation
+status: approved
+approval:
+  reviewer: HB
+  timestamp: '2026-03-02T10:00:23.852404+00:00'
+  gate2_checklist:
+    semantic_accuracy: pass
+    scope_completeness: pass
+    authority_correctness: pass
+    relation_validity: pass

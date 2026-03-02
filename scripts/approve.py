@@ -86,8 +86,49 @@ def approve_file(path: Path, reviewer: str, checklist: dict) -> bool:
     return result["status"] == "approved"
 
 
+def batch_approve(reviewer: str = "HB") -> tuple[int, int]:
+    """Batch-approve all verified rules.
+
+    Per CLAUDE.md batch approval policy:
+    same source document bundle, all G2 checklist items pass.
+    Returns (approved_count, total_verified).
+    """
+    rules_dir = ROOT / "rules"
+    checklist = {item: "pass" for item in G2_CHECKLIST_ITEMS}
+
+    verified = []
+    for path in sorted(rules_dir.rglob("*.yaml")):
+        if path.name.startswith("_"):
+            continue
+        with open(path, encoding="utf-8") as f:
+            rule = yaml.safe_load(f)
+        if rule and rule.get("status") == "verified":
+            verified.append(path)
+
+    approved = 0
+    for path in verified:
+        if approve_file(path, reviewer, checklist):
+            approved += 1
+
+    return approved, len(verified)
+
+
 def main():
-    """CLI: Approve verified rules interactively."""
+    """CLI: Approve verified rules interactively or in batch."""
+    if "--batch" in sys.argv:
+        reviewer = "HB"
+        for i, arg in enumerate(sys.argv):
+            if arg == "--reviewer" and i + 1 < len(sys.argv):
+                reviewer = sys.argv[i + 1]
+
+        print(f"\nBatch G2 Approval (reviewer: {reviewer})")
+        print("=" * 60)
+        approved, total = batch_approve(reviewer)
+        print(f"\n{'=' * 60}")
+        print(f"Result: {approved}/{total} approved")
+        print("=" * 60)
+        sys.exit(0 if approved == total else 1)
+
     rules_dir = ROOT / "rules"
     verified = []
 

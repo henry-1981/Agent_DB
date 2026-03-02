@@ -1,0 +1,25 @@
+rule_id: kmdia-fc-art5-p3-item1
+text: '1. 사업자가 국내외 본사 또는 지사 또는 그 관계사, 판매업자 등이나 마케팅 대행사(사업자의 위탁을 받아 의료기기의 판촉활동을 하는
+  회사)에게 금품류를 제공 하면서 이를 의료기관 등 또는 보건의료인에게 제공하 도록 요구하는 경우
+
+  '
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제5조 제3항 제1호
+scope:
+- 간주 제공
+- 위탁 판매
+- 마케팅 대행사
+- 본사·지사·관계사를 통한 금품류 제공
+- 직접 요구를 통한 간주 제공
+authority: regulation
+status: approved
+approval:
+  reviewer: HB
+  timestamp: '2026-03-02T10:00:23.855258+00:00'
+  gate2_checklist:
+    semantic_accuracy: pass
+    scope_completeness: pass
+    authority_correctness: pass
+    relation_validity: pass

@@ -159,17 +159,43 @@ def _print_result(rule_id: str, result: dict):
         print(f"         warn:  {w}")
 
 
+def apply_gate1(path: Path, root: Path | None = None) -> bool:
+    """Run G1 on a file and write the status change back if passed."""
+    with open(path, encoding="utf-8") as f:
+        raw = f.read()
+    rule = yaml.safe_load(raw)
+    if rule.get("status") != "draft":
+        return False
+
+    result = run_gate1(rule, root)
+    if result["passed"]:
+        # Preserve YAML comments by doing minimal replacement
+        updated = raw.replace("status: draft", "status: verified", 1)
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(updated)
+    return result["passed"]
+
+
 def main():
-    """CLI: Run G1 on all draft rules or a specific file."""
+    """CLI: Run G1 on all draft rules or a specific file.
+
+    Flags:
+      --apply  Write status changes to files (draft -> verified)
+    """
     import sys
 
-    if len(sys.argv) > 1:
+    do_apply = "--apply" in sys.argv
+    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+
+    if args:
         # Single file mode
-        path = Path(sys.argv[1])
+        path = Path(args[0])
         with open(path, encoding="utf-8") as f:
             rule = yaml.safe_load(f)
         result = run_gate1(rule, ROOT)
         _print_result(rule.get("rule_id", path.name), result)
+        if do_apply and result["passed"]:
+            apply_gate1(path, ROOT)
         sys.exit(0 if result["passed"] else 1)
 
     # All draft rules
@@ -187,10 +213,13 @@ def main():
         _print_result(rule["rule_id"], result)
         if result["passed"]:
             passed += 1
+            if do_apply:
+                apply_gate1(path, ROOT)
         else:
             failed += 1
 
-    print(f"\nG1 Summary: {passed}/{total} passed, {failed} failed")
+    suffix = " (applied)" if do_apply else " (dry-run, use --apply to persist)"
+    print(f"\nG1 Summary: {passed}/{total} passed, {failed} failed{suffix}")
     sys.exit(0 if failed == 0 else 1)
 
 

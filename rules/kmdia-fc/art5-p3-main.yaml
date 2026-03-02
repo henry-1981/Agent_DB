@@ -1,0 +1,22 @@
+rule_id: kmdia-fc-art5-p3-main
+text: '③ 다음 각 호의 경우에는 사업자가 의료기관 등 또는 보건의료인에게 금품류를 직접 제공한 것으로 본다.
+
+  '
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제5조 제3항 본문
+scope:
+- 간주 제공 원칙
+- 직접 제공 의제
+- 사업자의 금품류 직접 제공으로 보는 경우
+authority: regulation
+status: approved
+approval:
+  reviewer: HB
+  timestamp: '2026-03-02T10:00:23.857405+00:00'
+  gate2_checklist:
+    semantic_accuracy: pass
+    scope_completeness: pass
+    authority_correctness: pass
+    relation_validity: pass

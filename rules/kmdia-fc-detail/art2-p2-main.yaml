@@ -1,0 +1,27 @@
+rule_id: kmdia-fc-detail-art2-p2-main
+text: '② 규약 제5조 제3항 제1호에서 "사업자의 국내외 본사, 지사나 그 관계사가 의료기관 등 또는 보건의료인에게 금품류를 제공한 경우"라
+  함은, 사업자가 사업자의 국내외 본사, 지사나 그 관계사에게 금품류를 제공하면서 이를 의료기관 등 또는 보건의료인에게 제공하도록 요구하는 경우
+  또는 사업자가 사업자의 국내의 본사, 지사나 그 관계사가 단독으로 의료기관 등 또는 보건의료인에게 금품류를 제공하는 것을 알았거나 알 수 있었음에도
+  고의 또는 중대한 과실로 이를 방지하지 아니한 경우를 말한다.
+
+  '
+source_ref:
+  document: kmdia-fc-detail
+  version: '2022.04'
+  location: 제2조 제2항
+scope:
+- 간주 제공 해석
+- 직접 요구 해석
+- 본사·지사·관계사
+- 고의 또는 중대한 과실
+- 금품류 제공 방지 의무
+authority: regulation
+status: approved
+approval:
+  reviewer: HB
+  timestamp: '2026-03-02T10:00:23.874778+00:00'
+  gate2_checklist:
+    semantic_accuracy: pass
+    scope_completeness: pass
+    authority_correctness: pass
+    relation_validity: pass

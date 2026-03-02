@@ -1,0 +1,25 @@
+rule_id: kmdia-fc-art6-p1-main
+text: '제6조 (견본품의 제공) ① 사업자 및 판매업자 등은 의료기기의 특성을 확인할 수 있도록 최소 포장 단위에 ''견본품'' 또는 ''sample''을
+  표시한 의료기기를 의료기관에 무상으로 제공할 수 있다. 이 때 사업자 및 판매업자 등은 해당 의료기기의 특성 등을 확인하는데 필요한 최소수량 및
+  최소기간(반짝 사용 가능한 의료기기로써 그 사용횟수가 예정되어 있는 경우)을 초과하여서는 아니된다.
+
+  '
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제6조 제1항
+scope:
+- 견본품 제공 일반 원칙
+- 최소 포장 단위에 견본품 또는 sample 표시
+- 의료기관에 무상 제공
+- 최소수량 및 최소기간 초과 금지
+authority: regulation
+status: approved
+approval:
+  reviewer: HB
+  timestamp: '2026-03-02T10:00:23.859483+00:00'
+  gate2_checklist:
+    semantic_accuracy: pass
+    scope_completeness: pass
+    authority_correctness: pass
+    relation_validity: pass

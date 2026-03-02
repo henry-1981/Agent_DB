@@ -1,0 +1,26 @@
+rule_id: kmdia-fc-art5-p2-main
+text: '② 제1항에도 불구하고 사업자및 판매업자 등은 제1항 단서에 의거하여 허용되는 금품류 외에「의료법」 제23조의2 제2항, 보건복지부령「의료기기
+  유통 및 판 매질서 유지에 관한 규칙」제2조와 관련하여 동 법령의 소관부서인 보건복지부의 유권해석을 통해 보건의료 인에게 제공할 수 있음이 확인된
+  금품류를 예외적으로 보건의료인에게 제공할 수 있다.
+
+  '
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제5조 제2항
+scope:
+- 법령 기반 예외
+- 의료법 제23조의2 제2항
+- 의료기기 유통 및 판매질서 유지에 관한 규칙 제2조
+- 보건복지부 유권해석
+- 확인된 금품류 예외적 제공
+authority: regulation
+status: approved
+approval:
+  reviewer: HB
+  timestamp: '2026-03-02T10:00:23.854077+00:00'
+  gate2_checklist:
+    semantic_accuracy: pass
+    scope_completeness: pass
+    authority_correctness: pass
+    relation_validity: pass
