@@ -148,3 +148,51 @@ def run_gate1(rule: dict, root: Path | None = None) -> dict:
         "errors": errors,
         "warnings": warnings,
     }
+
+
+def _print_result(rule_id: str, result: dict):
+    status = "PASS" if result["passed"] else "FAIL"
+    print(f"  [{status}] {rule_id} -> {result['new_status']}")
+    for e in result["errors"]:
+        print(f"         error: {e}")
+    for w in result["warnings"]:
+        print(f"         warn:  {w}")
+
+
+def main():
+    """CLI: Run G1 on all draft rules or a specific file."""
+    import sys
+
+    if len(sys.argv) > 1:
+        # Single file mode
+        path = Path(sys.argv[1])
+        with open(path, encoding="utf-8") as f:
+            rule = yaml.safe_load(f)
+        result = run_gate1(rule, ROOT)
+        _print_result(rule.get("rule_id", path.name), result)
+        sys.exit(0 if result["passed"] else 1)
+
+    # All draft rules
+    rules_dir = ROOT / "rules"
+    total, passed, failed = 0, 0, 0
+    for path in sorted(rules_dir.rglob("*.yaml")):
+        if path.name.startswith("_"):
+            continue
+        with open(path, encoding="utf-8") as f:
+            rule = yaml.safe_load(f)
+        if rule.get("status") != "draft":
+            continue
+        total += 1
+        result = run_gate1(rule, ROOT)
+        _print_result(rule["rule_id"], result)
+        if result["passed"]:
+            passed += 1
+        else:
+            failed += 1
+
+    print(f"\nG1 Summary: {passed}/{total} passed, {failed} failed")
+    sys.exit(0 if failed == 0 else 1)
+
+
+if __name__ == "__main__":
+    main()
