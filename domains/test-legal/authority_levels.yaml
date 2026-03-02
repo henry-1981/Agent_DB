@@ -1,0 +1,15 @@
+# test-legal domain authority levels (strongest to weakest).
+# Used by gate1.py check_authority() for runtime validation.
+# Deliberately differs from RA to verify domain isolation.
+
+levels:
+  - statute
+  - regulation
+  - corporate_policy
+  - guideline
+  - practice
+
+description: >
+  Test-legal domain authority hierarchy for E2E testing.
+  statute/corporate_policy/practice are unique to this domain;
+  regulation/guideline are shared with RA domain.

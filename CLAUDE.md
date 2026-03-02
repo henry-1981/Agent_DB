@@ -258,8 +258,9 @@ pytest tests/test_clean.py::TestFilterP4P7::test_page_number_patterns  # 단일 
 
 - **23 approved Rule Units** (kmdia-fc 18 + kmdia-fc-detail 5)
 - **5 approved Rule Relations** (excepts 4 + unresolved 1)
-- **54 tests** 전부 통과
+- **69 tests** 전부 통과
 - **도메인 플러그인** Phase B 완료 (domains/ra/)
+- **test-legal 도메인** E2E 검증 완료 (domains/test-legal/) — 도메인 격리 실증
 
 ### 유틸리티 스크립트
 

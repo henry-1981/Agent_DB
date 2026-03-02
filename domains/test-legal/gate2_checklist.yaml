@@ -1,0 +1,14 @@
+# test-legal domain G2 checklist items.
+# Used by approve.py for domain-specific G2 validation.
+# 3 items (RA has 4) — only scope_completeness is shared.
+
+items:
+  - id: legal_validity
+    label: "법적 유효성"
+    description: "해당 규칙의 법적 근거와 효력이 유효한가"
+  - id: precedent_check
+    label: "판례 확인"
+    description: "관련 판례가 이 규칙의 해석과 충돌하지 않는가"
+  - id: scope_completeness
+    label: "scope 완전성"
+    description: "적용 조건이 빠짐없이 포착되었는가"
