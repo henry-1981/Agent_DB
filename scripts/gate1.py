@@ -8,6 +8,7 @@ Checks (draft -> verified):
 5. [Stub] scope-text consistency (LLM judgment, flags for G2)
 """
 
+from difflib import SequenceMatcher
 from pathlib import Path
 
 import jsonschema
@@ -37,3 +38,26 @@ def check_schema(rule: dict) -> list[str]:
     schema = _get_schema()
     validator = jsonschema.Draft202012Validator(schema)
     return [e.message for e in validator.iter_errors(rule)]
+
+
+DUPLICATE_THRESHOLD = 0.90
+
+
+def check_duplicates(
+    candidate: dict, existing_rules: list[dict]
+) -> list[str]:
+    """Detect near-duplicate text. Similarity >= 0.90 -> reject."""
+    errors = []
+    cand_text = candidate.get("text", "")
+    cand_id = candidate.get("rule_id", "?")
+
+    for rule in existing_rules:
+        if rule.get("rule_id") == cand_id:
+            continue
+        ratio = SequenceMatcher(None, cand_text, rule.get("text", "")).ratio()
+        if ratio >= DUPLICATE_THRESHOLD:
+            errors.append(
+                f"text similarity {ratio:.2f} with '{rule['rule_id']}' "
+                f"(threshold: {DUPLICATE_THRESHOLD})"
+            )
+    return errors
