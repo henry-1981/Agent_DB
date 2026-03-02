@@ -1,0 +1,23 @@
+rule_id: kmdia-fc-art7-p1-item2
+text: '2. 사업자는 기부행위 전에 협회에서 정한 양식상에 기부목적, 기부규모 등을 기재하여 기부금품을 전달할 의학·의료기기 연구기관 등(이하
+  "기부대상"이라 한다)의 선정을 협회에 의뢰하고, 이후 협회의 결정에 따라 기부대상에 직접 기부한다.
+
+  '
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제7조 제1항 제2호
+scope:
+- 기부행위 사전 절차
+- 협회를 통한 기부대상 선정 의뢰
+- 기부목적·기부규모 기재 의무
+authority: regulation
+status: approved
+approval:
+  reviewer: HB
+  timestamp: '2026-03-02T10:00:23.866830+00:00'
+  gate2_checklist:
+    semantic_accuracy: pass
+    scope_completeness: pass
+    authority_correctness: pass
+    relation_validity: pass

@@ -1,0 +1,26 @@
+# Source Document Registry
+# Rule Unit의 source_ref.document는 여기 정의된 doc_id를 참조.
+# G1 자동검증에서 source_ref 무결성 체크에 사용.
+
+sources:
+  kmdia-fc:
+    title: "의료기기 거래에 관한 공정경쟁규약"
+    versions:
+      - version: "2022.04"
+        file: "의료기기 리베이트 예방 및 공정경쟁을 위한 안내서(2022.04).pdf"
+    publisher: "한국의료기기산업협회 (KMDIA)"
+    authority_level: regulation
+    notes: >
+      안내서는 공정경쟁규약 본문 + 세부운용기준 + FAQ를 포함.
+      좌측 칼럼이 규약 본문, 우측 칼럼이 세부운용기준.
+
+  kmdia-fc-detail:
+    title: "공정경쟁규약 세부운용기준"
+    versions:
+      - version: "2022.04"
+        file: "의료기기 리베이트 예방 및 공정경쟁을 위한 안내서(2022.04).pdf"
+    publisher: "한국의료기기산업협회 (KMDIA)"
+    authority_level: regulation
+    notes: >
+      공정경쟁규약 안내서의 우측 칼럼에 해당.
+      규약 본문의 위임을 받아 세부 허용 범위를 규정.

@@ -1,0 +1,26 @@
+rule_id: kmdia-fc-art7-p1-item1
+text: "1. 다음 각 목에 해당하는 기부행위는 허용되지 아니한다.\n  가. 기부하는 사업자의 의료기기에 대한 채택 등 거래와 관련한 이익이\
+  \ 약속되어 있는 경우\n  나. 사업자가 의료기기에 대한 채택 등 거래에 대한 영향을 고려하여\n      의학·의료기기 연구기관 등의 기부요청에\
+  \ 응하는 경우\n  다. 사회통념상 의학·의료기기 연구기관 등이 자신의 부담으로 지불해야 하는 것으로\n      인정되는 부동산·비품구입,\
+  \ 시설증·개축, 경영자금보전 등에 사용되는 자금에 충당되는 경우\n  라. 정당한 이유없이 동일한 의학·의료기기 연구기관 등에\n      반복적·지속적으로\
+  \ 기부금품을 제공하는 경우\n"
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제7조 제1항 제1호
+scope:
+- 기부행위 금지 조건
+- 거래 관련 이익 약속에 의한 기부 금지
+- 거래 영향 고려에 의한 기부 금지
+- 기관 자기부담 비용 충당 목적 기부 금지
+- 반복적·지속적 기부금품 제공 금지
+authority: regulation
+status: approved
+approval:
+  reviewer: HB
+  timestamp: '2026-03-02T10:00:23.865610+00:00'
+  gate2_checklist:
+    semantic_accuracy: pass
+    scope_completeness: pass
+    authority_correctness: pass
+    relation_validity: pass

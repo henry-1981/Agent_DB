@@ -43,7 +43,9 @@ properties:
     properties:
       document:
         type: string
-        description: Official name of the source document.
+        description: >
+          doc_id referencing sources/_sources.yaml (e.g., "kmdia-fc").
+          NOT the free-text document title. Validated against source registry.
       version:
         type: string
         description: Document version or revision date.

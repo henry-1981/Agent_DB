@@ -1,0 +1,23 @@
+rule_id: kmdia-fc-art7-p1-main
+text: '제7조 (기부행위) ① 사업자는 다음 각 호의 원칙에 근거하여 사회통념상 인정되는 범위 내에서 의학·의료기기 연구기관 등에 의학적, 교육적,
+  자선적 목적으로 기부행위를 할 수 있다.
+
+  '
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제7조 제1항 본문
+scope:
+- 의료기기 사업자의 의학·의료기기 연구기관 등에 대한 기부행위 허용 원칙
+- 기부행위의 목적 제한 (의학적, 교육적, 자선적)
+- 사회통념상 인정 범위 내 기부
+authority: regulation
+status: approved
+approval:
+  reviewer: HB
+  timestamp: '2026-03-02T10:00:23.872181+00:00'
+  gate2_checklist:
+    semantic_accuracy: pass
+    scope_completeness: pass
+    authority_correctness: pass
+    relation_validity: pass

@@ -1,0 +1,26 @@
+rule_id: kmdia-fc-art7-p1-item3
+text: "3. 제2호에도 불구하고, 사업자는 의학·의료기기 연구기관 등이 협회에 학술상 시상,\n캠페인 등 사업을 실시하기 위해 기부를 요청하는\
+  \ 경우 다음 각 목의 절차에 따라\n기부대상에 직접 기부한다.\n  가. 의학·의료기기 연구기관 등이 협회에서 정한 양식상에 사업명, 사업개요,\n\
+  \      기부요청금액 등을 기재하고 구체적인 사업계획서, 소요예산안 등 부속서류를\n      첨부하여 협회에 기부요청을 한다.\n  나.\
+  \ 협회는 사업계획의 적정성을 검토하여 그 검토결과에 따라 공지를 통해\n      기부를 희망하는 사업자를 모집하고 모집결과를 해당 기부대상\
+  \ 및\n      기부할 사업자에게 통지한다.\n  다. 사업자는 협회의 통지에 따라 기부대상인 해당 의학·의료기기 연구기관 등에\n    \
+  \  직접 기부한다.\n"
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제7조 제1항 제3호
+scope:
+- 지정기부 예외 절차 (제2호 예외)
+- 학술상 시상·캠페인 등 사업 목적 기부 요청
+- 협회 기부요청 접수 및 사업계획 검토
+- 기부 희망 사업자 모집 및 통지
+authority: regulation
+status: approved
+approval:
+  reviewer: HB
+  timestamp: '2026-03-02T10:00:23.867981+00:00'
+  gate2_checklist:
+    semantic_accuracy: pass
+    scope_completeness: pass
+    authority_correctness: pass
+    relation_validity: pass
