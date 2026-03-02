@@ -1,0 +1,169 @@
+# Rule Unit JSON Schema (YAML format)
+# Validates the 6 mandatory fields that anchor Agent reasoning to evidence.
+
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: "https://agent-db.local/schemas/rule-unit.schema.yaml"
+title: Rule Unit
+description: >
+  Atomic unit of organizational knowledge. Every field exists because
+  its absence breaks evidence-grounded reasoning.
+
+type: object
+
+required:
+  - rule_id
+  - text
+  - source_ref
+  - scope
+  - authority
+  - status
+
+properties:
+  rule_id:
+    type: string
+    pattern: "^[a-z0-9][a-z0-9\\-]+$"
+    description: >
+      Stable identifier for citation. Agent output must include this ID.
+      Format: {source}-{article/section}-{clause}
+      Example: kmdia-fc-art7-1
+
+  text:
+    type: string
+    minLength: 10
+    description: >
+      Verbatim canonical text of the rule. NOT a summary.
+      Agent must quote this text, never paraphrase.
+
+  source_ref:
+    type: object
+    required:
+      - document
+      - version
+      - location
+    properties:
+      document:
+        type: string
+        description: Official name of the source document.
+      version:
+        type: string
+        description: Document version or revision date.
+      location:
+        type: string
+        description: >
+          Human-navigable coordinate within the document.
+          Examples: "제7조 제1항", "Section 3.2", "p.42"
+    additionalProperties: false
+
+  scope:
+    type: array
+    items:
+      type: string
+    minItems: 1
+    description: >
+      Conditions under which this rule applies.
+      Without scope, irrelevant rules get matched to queries.
+
+  authority:
+    type: string
+    enum:
+      - law
+      - regulation
+      - sop
+      - guideline
+      - precedent
+    description: >
+      Binding force of this rule. Determines precedence when rules conflict.
+      law > regulation > sop > guideline > precedent
+
+  status:
+    type: string
+    enum:
+      - draft
+      - verified
+      - approved
+      - suspended
+      - superseded
+      - rejected
+    description: >
+      Lifecycle state. Controls Agent citation behavior:
+      draft/rejected = never cite,
+      verified = cite with warning,
+      approved = cite as authoritative,
+      suspended/superseded = do not cite.
+
+  # --- Optional fields (present only when status warrants) ---
+
+  approval:
+    type: object
+    required:
+      - reviewer
+      - timestamp
+      - gate2_checklist
+    properties:
+      reviewer:
+        type: string
+      timestamp:
+        type: string
+        format: date-time
+      gate2_checklist:
+        type: object
+        required:
+          - semantic_accuracy
+          - scope_completeness
+          - authority_correctness
+          - relation_validity
+        properties:
+          semantic_accuracy:
+            type: string
+            enum: [pass, fail]
+          scope_completeness:
+            type: string
+            enum: [pass, fail]
+          authority_correctness:
+            type: string
+            enum: [pass, fail]
+          relation_validity:
+            type: string
+            enum: [pass, fail]
+        additionalProperties: false
+      notes:
+        type: string
+    additionalProperties: false
+    description: Required when status is 'approved'.
+
+  superseded_by:
+    type: string
+    description: >
+      rule_id of the successor rule. Required when status is 'superseded'.
+
+  rejection_reason:
+    type: string
+    description: >
+      Why this rule was rejected. Required when status is 'rejected'.
+
+additionalProperties: false
+
+# Conditional requirements based on status
+if:
+  properties:
+    status:
+      const: approved
+then:
+  required:
+    - approval
+
+allOf:
+  - if:
+      properties:
+        status:
+          const: superseded
+    then:
+      required:
+        - superseded_by
+  - if:
+      properties:
+        status:
+          const: rejected
+    then:
+      required:
+        - rejection_reason

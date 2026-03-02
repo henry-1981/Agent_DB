@@ -1,0 +1,114 @@
+# Rule Relation JSON Schema (YAML format)
+# Encodes implicit knowledge (precedence, exceptions, conflicts)
+# between Rule Units as explicit, verifiable structures.
+
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: "https://agent-db.local/schemas/rule-relation.schema.yaml"
+title: Rule Relation
+description: >
+  Directional relationship between two Rule Units.
+  Every relation must have a condition (when it fires) and
+  a resolution (what the Agent should do).
+
+type: object
+
+required:
+  - relation_id
+  - type
+  - source_rule
+  - target_rule
+  - condition
+  - resolution
+  - authority_basis
+  - registered_by
+  - status
+
+properties:
+  relation_id:
+    type: string
+    pattern: "^rel-[a-z0-9][a-z0-9\\-]+$"
+    description: >
+      Unique identifier for this relation.
+      Format: rel-{context}-{sequence}
+
+  type:
+    type: string
+    enum:
+      - overrides
+      - excepts
+      - supersedes
+      - unresolved
+    description: >
+      overrides: source takes precedence over target (conditional).
+      excepts: source carves out an exception from target.
+      supersedes: source replaces target (temporal).
+      unresolved: genuine conflict, must escalate to human.
+
+  source_rule:
+    type: string
+    description: rule_id of the rule that overrides/excepts/supersedes.
+
+  target_rule:
+    type: string
+    description: rule_id of the rule being overridden/excepted/superseded.
+
+  condition:
+    type: string
+    minLength: 5
+    description: >
+      When this relationship fires. A relation without a condition
+      must be rejected — it would mask the implicit knowledge
+      instead of making it explicit.
+
+  resolution:
+    type: string
+    minLength: 10
+    description: >
+      What the Agent must do when encountering this relation.
+      For 'unresolved': must include escalation guidance.
+
+  authority_basis:
+    type: string
+    description: >
+      Why this relationship holds. The evidence for the relation itself.
+
+  registered_by:
+    type: string
+    description: Who defined this relationship.
+
+  status:
+    type: string
+    enum:
+      - draft
+      - verified
+      - approved
+      - rejected
+    description: >
+      Relations require stricter approval than Rule Units.
+      Only 'supersedes' can be auto-verified.
+      overrides/excepts/unresolved require human approval.
+
+  approval:
+    type: object
+    required:
+      - reviewer
+      - timestamp
+    properties:
+      reviewer:
+        type: string
+      timestamp:
+        type: string
+        format: date-time
+      notes:
+        type: string
+    additionalProperties: false
+
+additionalProperties: false
+
+if:
+  properties:
+    status:
+      const: approved
+then:
+  required:
+    - approval
