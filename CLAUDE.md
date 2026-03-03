@@ -185,8 +185,8 @@ Relation 스키마에 `suspended` 상태 추가. Rule Unit이 suspended/supersed
 - **source_ref 무결성**: 원천 문서 목록에 존재 여부
 - **authority 검증**: 도메인 config (`domains/{domain}/authority_levels.yaml`) 대비 런타임 유효성 검사
 - **중복 탐지**: text similarity ≥ 0.90이면 reject
-- **[Stub] 텍스트 충실도**: 원본 PDF 재추출 후 diff (character similarity ≥ 0.95)
-- **[Stub] scope-text 정합성**: scope 항목이 text에서 도출 가능한지 (LLM 판정)
+- **텍스트 충실도**: 원본 PDF 재추출 후 diff (character similarity ≥ 0.95, warning 전용)
+- **scope-text 정합성**: scope 항목이 text에서 도출 가능한지 (LLM 판정, warning 전용)
 
 ### Gate 2: 인간 승인 (verified → approved)
 
@@ -254,13 +254,17 @@ pytest tests/
 pytest tests/test_clean.py::TestFilterP4P7::test_page_number_patterns  # 단일 테스트
 ```
 
-## Current State (2026-03-02)
+## Current State (2026-03-03)
 
 - **23 approved Rule Units** (kmdia-fc 18 + kmdia-fc-detail 5)
 - **5 approved Rule Relations** (excepts 4 + unresolved 1)
-- **69 tests** 전부 통과
+- **82 tests** 전부 통과
 - **도메인 플러그인** Phase B 완료 (domains/ra/)
 - **test-legal 도메인** E2E 검증 완료 (domains/test-legal/) — 도메인 격리 실증
+- **retrieve.py 도메인 필터** — `--domain` 파라미터로 도메인별 검색
+- **G1 텍스트 충실도** — pymupdf 기반 PDF 원문 대비 검증 (warning 전용)
+- **G1 scope-text 정합성** — anthropic API 기반 LLM 판정 (warning 전용)
+- **G2 큐 모니터** — verified 규칙 대기 현황·임계값 경보
 
 ### 유틸리티 스크립트
 
@@ -271,6 +275,7 @@ pytest tests/test_clean.py::TestFilterP4P7::test_page_number_patterns  # 단일 
 | `scripts/retrieve.py "<query>"` | Agent 검색+인용 |
 | `scripts/cascade.py [--check\|--apply]` | Orphan Relation cascade |
 | `scripts/scope_monitor.py [--warn]` | Scope 오염 조기 경보 |
+| `scripts/queue_monitor.py [--domain\|--json\|--warn]` | G2 승인 대기 큐 모니터 |
 | `scripts/context.py <rule_id>` | Traceability 계층 조회 |
 
 ## Conventions

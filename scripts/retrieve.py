@@ -18,6 +18,8 @@ from pathlib import Path
 
 import yaml
 
+from domain import resolve_domain
+
 ROOT = Path(__file__).resolve().parent.parent
 
 
@@ -68,6 +70,7 @@ def search_rules(
     root: Path | None = None,
     status_filter: StatusFilter = StatusFilter.VERIFIED_AND_ABOVE,
     threshold: float = 0.5,
+    domain: str | None = None,
 ) -> list[dict]:
     """Search rules by scope matching. Returns matched rules sorted by score."""
     base = root or ROOT
@@ -78,6 +81,11 @@ def search_rules(
     for rule in rules:
         if not status_filter.allows(rule.get("status", "")):
             continue
+        # Domain filter
+        if domain:
+            rule_domain = rule.get("domain") or resolve_domain(rule, base)
+            if rule_domain != domain:
+                continue
         score = _match_score(keywords, rule)
         if score >= threshold:
             rule_copy = dict(rule)
@@ -111,16 +119,38 @@ def format_citation(rule: dict) -> str | None:
 
 
 def main():
-    """CLI: Search and cite rules."""
-    if len(sys.argv) < 2:
-        print("Usage: python3 retrieve.py <query>")
-        print("Example: python3 retrieve.py '기부 금지 조건'")
+    """CLI: Search and cite rules.
+
+    Flags:
+      --domain <value>  Filter by domain (e.g., ra, test-legal)
+    """
+    # Parse --domain flag
+    domain_filter = None
+    argv = sys.argv[1:]
+    skip_next = False
+    args = []
+    for i, a in enumerate(argv):
+        if skip_next:
+            skip_next = False
+            continue
+        if a == "--domain" and i + 1 < len(argv):
+            domain_filter = argv[i + 1]
+            skip_next = True
+            continue
+        if not a.startswith("--"):
+            args.append(a)
+
+    if not args:
+        print("Usage: python3 retrieve.py <query> [--domain <value>]")
+        print("Example: python3 retrieve.py '기부 금지 조건' --domain ra")
         sys.exit(1)
 
-    query = " ".join(sys.argv[1:])
-    # For demo: use VERIFIED_AND_ABOVE to show current draft rules too
-    # In production: use APPROVED_ONLY
-    results = search_rules(query, status_filter=StatusFilter.VERIFIED_AND_ABOVE)
+    query = " ".join(args)
+    results = search_rules(
+        query,
+        status_filter=StatusFilter.VERIFIED_AND_ABOVE,
+        domain=domain_filter,
+    )
 
     if not results:
         print(f'No citable rules found for: "{query}"')

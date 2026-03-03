@@ -3,7 +3,15 @@
 import pytest
 import yaml
 
-from gate1 import check_schema, check_duplicates, check_source_ref, check_authority, run_gate1
+from gate1 import (
+    check_schema,
+    check_duplicates,
+    check_source_ref,
+    check_authority,
+    check_text_fidelity,
+    check_scope_text_coherence,
+    run_gate1,
+)
 
 
 def test_valid_rule_passes_schema(sample_rule):
@@ -142,3 +150,84 @@ def test_run_gate1_skips_non_draft(sample_rule, root):
     result = run_gate1(sample_rule, root)
     assert result["passed"] is False
     assert "draft" in result["errors"][0].lower()
+
+
+# --- Text fidelity tests ---
+
+
+def test_text_fidelity_skips_when_no_pymupdf(monkeypatch, sample_rule):
+    """Graceful skip when pymupdf is not installed."""
+    import builtins
+
+    real_import = builtins.__import__
+
+    def mock_import(name, *args, **kwargs):
+        if name == "pymupdf":
+            raise ImportError("mocked")
+        return real_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", mock_import)
+    warnings = check_text_fidelity(sample_rule)
+    assert len(warnings) == 1
+    assert "pymupdf not installed" in warnings[0]
+
+
+def test_text_fidelity_skips_when_pdf_not_found(sample_rule, root):
+    """Warning when PDF file does not exist on disk."""
+    # source_ref points to kmdia-fc v2022.04 which has a file entry
+    # but the actual PDF won't exist in the repo
+    warnings = check_text_fidelity(sample_rule, root)
+    assert len(warnings) >= 1
+    # Either pymupdf not installed or PDF not found — both are acceptable skips
+    assert any(
+        "pymupdf" in w or "PDF not found" in w or "skipping" in w
+        for w in warnings
+    )
+
+
+# --- Scope-text coherence tests ---
+
+
+def test_scope_coherence_skips_when_no_anthropic(monkeypatch, sample_rule):
+    """Graceful skip when anthropic is not installed."""
+    import builtins
+
+    real_import = builtins.__import__
+
+    def mock_import(name, *args, **kwargs):
+        if name == "anthropic":
+            raise ImportError("mocked")
+        return real_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", mock_import)
+    warnings = check_scope_text_coherence(sample_rule)
+    assert len(warnings) == 1
+    assert "anthropic not installed" in warnings[0]
+
+
+def test_scope_coherence_skips_when_no_api_key(monkeypatch, sample_rule):
+    """Graceful skip when ANTHROPIC_API_KEY is not set."""
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    # Ensure anthropic import works but API key is missing
+    try:
+        import anthropic  # noqa: F401
+
+        warnings = check_scope_text_coherence(sample_rule)
+        assert len(warnings) == 1
+        assert "ANTHROPIC_API_KEY not set" in warnings[0]
+    except ImportError:
+        # anthropic not installed — also acceptable in test env
+        warnings = check_scope_text_coherence(sample_rule)
+        assert "anthropic not installed" in warnings[0]
+
+
+# --- Warning isolation test ---
+
+
+def test_run_gate1_warnings_dont_block_pass(sample_rule, root):
+    """Warnings from text_fidelity/scope_coherence don't affect passed status."""
+    result = run_gate1(sample_rule, root)
+    assert result["passed"] is True
+    # Warnings should exist (pymupdf/anthropic likely not installed in test env)
+    assert len(result["warnings"]) >= 1
+    assert result["errors"] == []

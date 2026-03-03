@@ -134,6 +134,13 @@ properties:
     description: >
       Why this rule was rejected. Required when status is 'rejected'.
 
+  verified_at:
+    type: string
+    format: date-time
+    description: >
+      G1 verification timestamp. Recorded by gate1.py --apply.
+      Used by queue_monitor.py to calculate waiting time.
+
 additionalProperties: false
 
 # Conditional requirements based on status

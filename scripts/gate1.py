@@ -5,10 +5,13 @@ Checks (draft -> verified):
 2. source_ref integrity (document + version exist in registry)
 3. Authority validation (value exists in domain config)
 4. Duplicate detection (text similarity >= 0.90 -> reject)
-5. [Stub] Text fidelity (PDF re-extraction, requires pipeline integration)
-6. [Stub] scope-text consistency (LLM judgment, flags for G2)
+5. Text fidelity (PDF re-extraction via pymupdf, warning only)
+6. Scope-text coherence (LLM judgment via anthropic, warning only)
 """
 
+import os
+import re
+from datetime import datetime, timezone
 from difflib import SequenceMatcher
 from pathlib import Path
 
@@ -116,6 +119,154 @@ def check_source_ref(rule: dict, root: Path | None = None) -> list[str]:
     return errors
 
 
+TEXT_FIDELITY_THRESHOLD = 0.95
+
+
+def _load_source_files(root: Path | None = None) -> dict[str, dict[str, str]]:
+    """Load source registry with file paths. Returns {doc_id: {version: filename}}."""
+    base = root or ROOT
+    path = base / "sources" / "_sources.yaml"
+    if not path.exists():
+        return {}
+    with open(path, encoding="utf-8") as f:
+        data = yaml.safe_load(f)
+    result = {}
+    for doc_id, info in data.get("sources", {}).items():
+        ver_map = {}
+        for v in info.get("versions", []):
+            if "file" in v:
+                ver_map[v["version"]] = v["file"]
+        result[doc_id] = ver_map
+    return result
+
+
+def check_text_fidelity(rule: dict, root: Path | None = None) -> list[str]:
+    """Compare rule.text against source PDF. Returns warnings (never errors).
+
+    Algorithm:
+    1. Locate PDF via source_ref -> _sources.yaml file mapping
+    2. Extract full text with pymupdf
+    3. Anchor search: find rule_text[:50] in PDF text
+    4. Compare window around anchor with SequenceMatcher
+    5. Warning if best ratio < 0.95
+    """
+    try:
+        import pymupdf  # noqa: F811
+    except ImportError:
+        return ["[text_fidelity] pymupdf not installed, skipping"]
+
+    base = root or ROOT
+    src = rule.get("source_ref", {})
+    doc_id = src.get("document", "")
+    version = src.get("version", "")
+
+    source_files = _load_source_files(root)
+    doc_versions = source_files.get(doc_id, {})
+    filename = doc_versions.get(version)
+    if not filename:
+        return [f"[text_fidelity] no PDF file mapped for {doc_id} v{version}, skipping"]
+
+    pdf_path = base / "sources" / filename
+    if not pdf_path.exists():
+        return [f"[text_fidelity] PDF not found: {pdf_path.name}, skipping"]
+
+    # Extract full text from PDF
+    try:
+        doc = pymupdf.open(str(pdf_path))
+        full_text = " ".join(page.get_text() for page in doc)
+        doc.close()
+    except Exception as e:
+        return [f"[text_fidelity] PDF extraction failed: {e}"]
+
+    rule_text = rule.get("text", "")
+    if not rule_text:
+        return ["[text_fidelity] empty rule text, skipping"]
+
+    # Normalize whitespace
+    norm = lambda s: re.sub(r"\s+", " ", s).strip()
+    rule_text_norm = norm(rule_text)
+    full_text_norm = norm(full_text)
+
+    # Anchor search: first 50 chars of rule text
+    anchor = rule_text_norm[:50]
+    anchor_pos = full_text_norm.find(anchor)
+
+    if anchor_pos >= 0:
+        # Extract window around anchor
+        window_len = int(len(rule_text_norm) * 1.2)
+        window = full_text_norm[anchor_pos : anchor_pos + window_len]
+        best_ratio = SequenceMatcher(None, rule_text_norm, window).ratio()
+    else:
+        # Anchor not found; compare against entire text (fallback)
+        best_ratio = SequenceMatcher(None, rule_text_norm, full_text_norm).ratio()
+
+    if best_ratio < TEXT_FIDELITY_THRESHOLD:
+        return [
+            f"[text_fidelity] best match ratio {best_ratio:.3f} "
+            f"< threshold {TEXT_FIDELITY_THRESHOLD} for {rule.get('rule_id', '?')}"
+        ]
+    return []
+
+
+def check_scope_text_coherence(rule: dict, root: Path | None = None) -> list[str]:
+    """Check if scope items are derivable from rule text via LLM.
+
+    Returns warnings (never errors). Gracefully skips if anthropic
+    is not installed or ANTHROPIC_API_KEY is not set.
+    """
+    try:
+        import anthropic  # noqa: F811
+    except ImportError:
+        return ["[scope_coherence] anthropic not installed, skipping"]
+
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    if not api_key:
+        return ["[scope_coherence] ANTHROPIC_API_KEY not set, skipping"]
+
+    rule_text = rule.get("text", "")
+    scope = rule.get("scope", [])
+    if not scope or not rule_text:
+        return []
+
+    prompt = (
+        "You are a regulatory document analyst. Given a rule text and its scope items, "
+        "determine if each scope item can be logically derived from the rule text.\n\n"
+        f"Rule text:\n{rule_text}\n\n"
+        f"Scope items:\n"
+        + "\n".join(f"- {s}" for s in scope)
+        + "\n\nRespond in JSON format: "
+        '{"results": [{"scope": "<item>", "derivable": true/false, "reason": "<brief>"}]}'
+    )
+
+    try:
+        client = anthropic.Anthropic(api_key=api_key)
+        message = client.messages.create(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=1024,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        import json
+
+        # Extract JSON from response
+        resp_text = message.content[0].text
+        # Try to parse JSON (may be wrapped in markdown code block)
+        resp_text = resp_text.strip()
+        if resp_text.startswith("```"):
+            resp_text = resp_text.split("\n", 1)[1].rsplit("```", 1)[0]
+        data = json.loads(resp_text)
+
+        warnings = []
+        for item in data.get("results", []):
+            if not item.get("derivable", True):
+                warnings.append(
+                    f"[scope_coherence] scope '{item['scope']}' may not be derivable "
+                    f"from text: {item.get('reason', 'no reason')}"
+                )
+        return warnings
+    except Exception as e:
+        return [f"[scope_coherence] LLM check failed: {e}"]
+
+
 def _load_existing_rules(root: Path | None = None) -> list[dict]:
     """Load all existing rule files for duplicate checking."""
     base = root or ROOT
@@ -166,6 +317,12 @@ def run_gate1(rule: dict, root: Path | None = None) -> dict:
     existing = _load_existing_rules(root)
     errors.extend(check_duplicates(rule, existing))
 
+    # Check 5: Text fidelity (warning only)
+    warnings.extend(check_text_fidelity(rule, root))
+
+    # Check 6: Scope-text coherence (warning only)
+    warnings.extend(check_scope_text_coherence(rule, root))
+
     passed = len(errors) == 0
     return {
         "passed": passed,
@@ -196,6 +353,9 @@ def apply_gate1(path: Path, root: Path | None = None) -> bool:
     if result["passed"]:
         # Preserve YAML comments by doing minimal replacement
         updated = raw.replace("status: draft", "status: verified", 1)
+        # Append verified_at timestamp
+        ts = datetime.now(timezone.utc).isoformat()
+        updated = updated.rstrip() + f"\nverified_at: '{ts}'\n"
         with open(path, "w", encoding="utf-8") as f:
             f.write(updated)
     return result["passed"]

@@ -8,9 +8,10 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = [
-    "pytest>=8.0",
-]
+dev = ["pytest>=8.0"]
+pdf = ["pymupdf>=1.24"]
+llm = ["anthropic>=0.40"]
+all = ["pymupdf>=1.24", "anthropic>=0.40"]
 
 [tool.setuptools]
 packages = []
