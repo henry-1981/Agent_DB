@@ -12,7 +12,9 @@ Citation rules per CLAUDE.md:
 - suspended/superseded: never cite
 """
 
+import math
 import sys
+from difflib import SequenceMatcher
 from enum import Enum
 from pathlib import Path
 
@@ -21,6 +23,13 @@ import yaml
 from domain import resolve_domain
 
 ROOT = Path(__file__).resolve().parent.parent
+
+# Scoring weights
+WEIGHT_SCOPE = 0.6
+WEIGHT_TEXT = 0.4
+FUZZY_THRESHOLD = 0.75
+FUZZY_DISCOUNT = 0.8
+RELATION_BONUS_CAP = 0.1
 
 
 class StatusFilter(Enum):
@@ -55,14 +64,138 @@ def _load_rules(root: Path) -> list[dict]:
     return rules
 
 
-def _match_score(keywords: list[str], rule: dict) -> float:
-    """Keyword-based scope matching. Returns 0~1."""
+def _keyword_match(kw: str, target: str) -> float:
+    """Single keyword vs text matching with fuzzy fallback.
+
+    Returns 1.0 for exact substring, ratio*FUZZY_DISCOUNT for fuzzy, 0.0 otherwise.
+    """
+    if not kw or not target:
+        return 0.0
+    if kw in target:
+        return 1.0
+    # Sliding window fuzzy match
+    kw_len = len(kw)
+    if kw_len > len(target):
+        return 0.0
+    best = 0.0
+    for i in range(len(target) - kw_len + 1):
+        window = target[i : i + kw_len]
+        ratio = SequenceMatcher(None, kw, window).ratio()
+        if ratio > best:
+            best = ratio
+    if best >= FUZZY_THRESHOLD:
+        return best * FUZZY_DISCOUNT
+    return 0.0
+
+
+def _scope_score(keywords: list[str], rule: dict, idf: dict[str, float]) -> float:
+    """Per-scope-item matching with IDF weighting."""
     scopes = rule.get("scope", [])
-    scope_text = " ".join(scopes)
+    if not keywords or not scopes:
+        return 0.0
+    total_weight = 0.0
+    weighted_score = 0.0
+    for kw in keywords:
+        w = idf.get(kw, 1.0)
+        # Best match across scope items
+        best = max((_keyword_match(kw, item) for item in scopes), default=0.0)
+        weighted_score += w * best
+        total_weight += w
+    return weighted_score / total_weight if total_weight > 0 else 0.0
+
+
+def _text_score(keywords: list[str], rule: dict, idf: dict[str, float]) -> float:
+    """Exact substring matching on text field, IDF-weighted.
+
+    No fuzzy matching on text — long text + short keywords causes false positives.
+    """
+    text = rule.get("text", "")
+    if not keywords or not text:
+        return 0.0
+    total_weight = 0.0
+    weighted_score = 0.0
+    for kw in keywords:
+        w = idf.get(kw, 1.0)
+        score = 1.0 if kw in text else 0.0
+        weighted_score += w * score
+        total_weight += w
+    return weighted_score / total_weight if total_weight > 0 else 0.0
+
+
+def _compute_idf(keywords: list[str], rules: list[dict]) -> dict[str, float]:
+    """Compute IDF weights for keywords across entire corpus."""
+    n = len(rules)
+    if n == 0:
+        return {kw: 1.0 for kw in keywords}
+    idf = {}
+    for kw in keywords:
+        df = 0
+        for rule in rules:
+            scope_text = " ".join(rule.get("scope", []))
+            text = rule.get("text", "")
+            corpus = scope_text + " " + text
+            if kw in corpus:
+                df += 1
+        if df > 0:
+            idf[kw] = max(math.log(n / df), 0.1)
+        else:
+            idf[kw] = math.log(n + 1)
+    return idf
+
+
+def _load_relations(root: Path) -> list[dict]:
+    """Load approved relations from relations/ directory."""
+    rel_dir = root / "relations"
+    relations = []
+    if not rel_dir.is_dir():
+        return relations
+    for path in sorted(rel_dir.rglob("*.yaml")):
+        if path.name.startswith("_"):
+            continue
+        with open(path, encoding="utf-8") as f:
+            data = yaml.safe_load(f)
+        if data and data.get("status") == "approved":
+            relations.append(data)
+    return relations
+
+
+def _relation_bonus(
+    rule_id: str, keywords: list[str], relations: list[dict]
+) -> float:
+    """Bonus score from matching keywords in related rule conditions."""
+    if not rule_id or not keywords or not relations:
+        return 0.0
+    total_kw = len(keywords)
+    hits = 0
+    for rel in relations:
+        src = rel.get("source_rule", "")
+        tgt = rel.get("target_rule", "")
+        if rule_id not in (src, tgt):
+            continue
+        condition = rel.get("condition", "")
+        for kw in keywords:
+            if kw in condition:
+                hits += 1
+                break  # one hit per relation
+    return min((hits / total_kw) * RELATION_BONUS_CAP, RELATION_BONUS_CAP)
+
+
+def _match_score(
+    keywords: list[str],
+    rule: dict,
+    *,
+    idf_weights: dict[str, float] | None = None,
+    relations: list[dict] | None = None,
+) -> float:
+    """Multi-field scoring: scope (fuzzy+IDF) + text (exact+IDF) + relation bonus."""
     if not keywords:
-        return 0
-    hits = sum(1 for kw in keywords if kw in scope_text)
-    return hits / len(keywords)
+        return 0.0
+    idf = idf_weights or {kw: 1.0 for kw in keywords}
+    s = _scope_score(keywords, rule, idf)
+    t = _text_score(keywords, rule, idf)
+    base = WEIGHT_SCOPE * s + WEIGHT_TEXT * t
+    bonus = _relation_bonus(rule.get("rule_id", ""), keywords, relations or [])
+    return base + bonus
 
 
 def search_rules(
@@ -71,11 +204,18 @@ def search_rules(
     status_filter: StatusFilter = StatusFilter.VERIFIED_AND_ABOVE,
     threshold: float = 0.5,
     domain: str | None = None,
+    include_relations: bool = True,
 ) -> list[dict]:
-    """Search rules by scope matching. Returns matched rules sorted by score."""
+    """Search rules with multi-field scoring. Returns matched rules sorted by score."""
     base = root or ROOT
     rules = _load_rules(base)
     keywords = query.split()
+
+    # IDF computed on full corpus before filtering
+    idf_weights = _compute_idf(keywords, rules)
+
+    # Load relations if requested
+    relations = _load_relations(base) if include_relations else []
 
     results = []
     for rule in rules:
@@ -86,7 +226,9 @@ def search_rules(
             rule_domain = rule.get("domain") or resolve_domain(rule, base)
             if rule_domain != domain:
                 continue
-        score = _match_score(keywords, rule)
+        score = _match_score(
+            keywords, rule, idf_weights=idf_weights, relations=relations
+        )
         if score >= threshold:
             rule_copy = dict(rule)
             rule_copy["_score"] = score
@@ -101,13 +243,23 @@ def format_citation(rule: dict) -> str | None:
 
     - approved: "[근거: {rule_id}] {text}"
     - verified: "[미승인] [근거: {rule_id}] {text}"
-    - others: None (cannot cite)
+    - superseded: "[대체됨: {rule_id}] → {superseded_by} 참조"
+    - suspended: "[재검토중: {rule_id}] 현재 재검토 중"
+    - draft/rejected: None (cannot cite, no redirect)
     """
     status = rule.get("status", "")
+    rule_id = rule.get("rule_id", "unknown")
+
+    if status == "superseded":
+        successor = rule.get("superseded_by", "unknown")
+        return f"[대체됨: {rule_id}] 이 규칙은 {successor} 규칙으로 대체되었습니다."
+
+    if status == "suspended":
+        return f"[재검토중: {rule_id}] 이 규칙은 현재 재검토 중입니다."
+
     if status in _NEVER_CITE:
         return None
 
-    rule_id = rule.get("rule_id", "unknown")
     text = rule.get("text", "").strip()
 
     if status == "approved":
@@ -122,10 +274,12 @@ def main():
     """CLI: Search and cite rules.
 
     Flags:
-      --domain <value>  Filter by domain (e.g., ra, test-legal)
+      --domain <value>     Filter by domain (e.g., ra, test-legal)
+      --threshold <float>  Minimum score threshold (default: 0.3)
     """
-    # Parse --domain flag
+    # Parse flags
     domain_filter = None
+    cli_threshold = 0.3  # CLI default lower than API (interactive search is broader)
     argv = sys.argv[1:]
     skip_next = False
     args = []
@@ -137,11 +291,15 @@ def main():
             domain_filter = argv[i + 1]
             skip_next = True
             continue
+        if a == "--threshold" and i + 1 < len(argv):
+            cli_threshold = float(argv[i + 1])
+            skip_next = True
+            continue
         if not a.startswith("--"):
             args.append(a)
 
     if not args:
-        print("Usage: python3 retrieve.py <query> [--domain <value>]")
+        print("Usage: python3 retrieve.py <query> [--domain <value>] [--threshold <float>]")
         print("Example: python3 retrieve.py '기부 금지 조건' --domain ra")
         sys.exit(1)
 
@@ -149,6 +307,7 @@ def main():
     results = search_rules(
         query,
         status_filter=StatusFilter.VERIFIED_AND_ABOVE,
+        threshold=cli_threshold,
         domain=domain_filter,
     )
 

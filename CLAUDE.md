@@ -258,10 +258,10 @@ pytest tests/test_clean.py::TestFilterP4P7::test_page_number_patterns  # 단일 
 
 - **23 approved Rule Units** (kmdia-fc 18 + kmdia-fc-detail 5)
 - **5 approved Rule Relations** (excepts 4 + unresolved 1)
-- **82 tests** 전부 통과
+- **115 tests** 전부 통과
 - **도메인 플러그인** Phase B 완료 (domains/ra/)
 - **test-legal 도메인** E2E 검증 완료 (domains/test-legal/) — 도메인 격리 실증
-- **retrieve.py 도메인 필터** — `--domain` 파라미터로 도메인별 검색
+- **retrieve.py multi-field 검색** — scope+text IDF 가중 스코어링, fuzzy 매칭, relation 보너스
 - **G1 텍스트 충실도** — pymupdf 기반 PDF 원문 대비 검증 (warning 전용)
 - **G1 scope-text 정합성** — anthropic API 기반 LLM 판정 (warning 전용)
 - **G2 큐 모니터** — verified 규칙 대기 현황·임계값 경보
@@ -272,7 +272,7 @@ pytest tests/test_clean.py::TestFilterP4P7::test_page_number_patterns  # 단일 
 |----------|------|
 | `scripts/gate1.py [--apply]` | G1 자동검증 (draft → verified) |
 | `scripts/approve.py [--batch]` | G2 인간 승인 (verified → approved) |
-| `scripts/retrieve.py "<query>"` | Agent 검색+인용 |
+| `scripts/retrieve.py "<query>" [--threshold N] [--domain D]` | Agent 검색+인용 (multi-field IDF 스코어링) |
 | `scripts/cascade.py [--check\|--apply]` | Orphan Relation cascade |
 | `scripts/scope_monitor.py [--warn]` | Scope 오염 조기 경보 |
 | `scripts/queue_monitor.py [--domain\|--json\|--warn]` | G2 승인 대기 큐 모니터 |
