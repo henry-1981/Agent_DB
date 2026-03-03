@@ -2,6 +2,10 @@
 
 Orchestrates: Parse → Split → Extract → Draft
 Converts source documents (PDF/Markdown) into draft Rule Unit YAML files.
+
+Phase 3 additions:
+  --version-update: version change detection + suspended transition + migration guide
+  --config: batch processing via ingest-config.yaml
 """
 
 from __future__ import annotations
@@ -20,6 +24,9 @@ from ingest.registry import (
     UserAbortError,
     register_new_source,
 )
+from ingest.version import version_update
+from ingest.migration import generate_relation_migration_guide, format_migration_guide
+from ingest.batch import load_batch_config, run_batch, format_batch_summary
 
 
 def _load_sources(root: Path) -> dict:
@@ -124,9 +131,9 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="Ingest a source document into draft Rule Unit YAML files.",
     )
-    parser.add_argument("--file", required=True, help="PDF or Markdown file path")
-    parser.add_argument("--doc-id", required=True, help="Document ID (from _sources.yaml)")
-    parser.add_argument("--version", required=True, help="Document version")
+    parser.add_argument("--file", help="PDF or Markdown file path")
+    parser.add_argument("--doc-id", help="Document ID (from _sources.yaml)")
+    parser.add_argument("--version", help="Document version")
     parser.add_argument("--domain", default=None, help="Override domain (default: from _domain.yaml)")
     parser.add_argument("--dry-run", action="store_true", help="Preview without writing YAML files")
     parser.add_argument("--force", action="store_true", help="Overwrite existing files")
@@ -140,10 +147,46 @@ def main() -> None:
     parser.add_argument("--authority-level", help="Authority level (for --register-source)")
     parser.add_argument("--publisher", help="Publisher (for --register-source)")
     parser.add_argument("--notes", default="", help="Notes (for --register-source)")
+
+    # --version-update: handle version change (Phase 3)
+    parser.add_argument(
+        "--version-update", action="store_true",
+        help="Handle version change: suspend old rules, cascade relations, show migration guide",
+    )
+    parser.add_argument("--new-version", help="New version string (for --version-update)")
+    parser.add_argument("--supersedes", help="Old version being superseded (for --version-update)")
+
+    # --config: batch processing (Phase 3)
+    parser.add_argument("--config", help="Batch config YAML file path (mutually exclusive with --file)")
+
     args = parser.parse_args()
 
+    root = Path(__file__).resolve().parent.parent
+
+    # Mode: --config (batch processing)
+    if args.config:
+        if args.file:
+            parser.error("--config and --file are mutually exclusive")
+
+        try:
+            results = run_batch(
+                config_path=Path(args.config),
+                root=root,
+                dry_run=args.dry_run,
+                force=args.force,
+            )
+        except (ValueError, FileNotFoundError) as e:
+            print(f"Error: {e}", file=sys.stderr)
+            sys.exit(1)
+
+        print(format_batch_summary(results))
+        return
+
+    # Mode: --register-source
     if args.register_source:
-        # Validate required fields for registration
+        if not args.file or not args.doc_id or not args.version:
+            parser.error("--register-source requires --file, --doc-id, --version")
+
         missing = []
         for field in ("title", "authority_level", "publisher"):
             if not getattr(args, field):
@@ -153,7 +196,6 @@ def main() -> None:
 
         domain = args.domain
         if domain is None:
-            root = Path(__file__).resolve().parent.parent
             domain = _load_default_domain(root)
 
         try:
@@ -166,7 +208,7 @@ def main() -> None:
                 publisher=args.publisher,
                 notes=args.notes,
                 domain=domain,
-                root=Path(__file__).resolve().parent.parent,
+                root=root,
             )
         except ValueError as e:
             print(f"Error: {e}", file=sys.stderr)
@@ -178,6 +220,55 @@ def main() -> None:
         print(f"\nSource '{args.doc_id}' registered successfully.")
         return
 
+    # Mode: --version-update
+    if args.version_update:
+        if not args.doc_id:
+            parser.error("--version-update requires --doc-id")
+        if not args.new_version:
+            parser.error("--version-update requires --new-version")
+        if not args.supersedes:
+            parser.error("--version-update requires --supersedes")
+
+        file_path = args.file or ""
+
+        try:
+            result = version_update(
+                doc_id=args.doc_id,
+                new_version=args.new_version,
+                old_version=args.supersedes,
+                file_path=file_path,
+                root=root,
+            )
+        except (ValueError, FileNotFoundError, KeyError) as e:
+            print(f"Error: {e}", file=sys.stderr)
+            sys.exit(1)
+
+        print(f"""Version Update Summary:
+  Document: {result['doc_id']}
+  Version change: {result['old_version']} → {result['new_version']}
+  Rules found: {result['rules_found']}
+  Rules suspended: {result['rules_suspended']}
+  Relations cascaded: {result['relations_cascaded']}""")
+
+        # Auto-generate migration guide
+        guide = generate_relation_migration_guide(
+            doc_id=args.doc_id,
+            old_version=args.supersedes,
+            new_version=args.new_version,
+            root=root,
+        )
+        print()
+        print(format_migration_guide(guide))
+        return
+
+    # Mode: default (single file ingestion)
+    if not args.file:
+        parser.error("--file is required (or use --config for batch processing)")
+    if not args.doc_id:
+        parser.error("--doc-id is required")
+    if not args.version:
+        parser.error("--version is required")
+
     try:
         summary = run_pipeline(
             file_path=args.file,
@@ -186,6 +277,7 @@ def main() -> None:
             domain=args.domain,
             dry_run=args.dry_run,
             force=args.force,
+            root=root,
         )
     except (ValueError, FileNotFoundError) as e:
         print(f"Error: {e}", file=sys.stderr)

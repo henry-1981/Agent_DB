@@ -254,22 +254,44 @@ pytest tests/
 pytest tests/test_clean.py::TestFilterP4P7::test_page_number_patterns  # 단일 테스트
 ```
 
-## Current State (2026-03-03)
+## Current State (2026-03-04)
 
 - **23 approved Rule Units** (kmdia-fc 18 + kmdia-fc-detail 5)
 - **5 approved Rule Relations** (excepts 4 + unresolved 1)
-- **115 tests** 전부 통과
+- **348 tests** 전부 통과
 - **도메인 플러그인** Phase B 완료 (domains/ra/)
 - **test-legal 도메인** E2E 검증 완료 (domains/test-legal/) — 도메인 격리 실증
 - **retrieve.py multi-field 검색** — scope+text IDF 가중 스코어링, fuzzy 매칭, relation 보너스
 - **G1 텍스트 충실도** — pymupdf 기반 PDF 원문 대비 검증 (warning 전용)
 - **G1 scope-text 정합성** — anthropic API 기반 LLM 판정 (warning 전용)
 - **G2 큐 모니터** — verified 규칙 대기 현황·임계값 경보
+- **Ingestion Pipeline Phase 1+2+3** — PDF/Markdown → draft YAML 자동 변환 (LLM scope 추출 + 분할 판단 + Source Registry confirm 등록 + 버전 동기화 + 일괄 처리)
+
+### Ingestion Pipeline
+
+```
+scripts/ingest.py              # CLI 엔트리포인트 (--register-source | --file | --version-update | --config)
+scripts/ingest/
+  ir.py                        # DocumentIR, Section, RuleCandidate
+  parse.py                     # PDF/Markdown 파서 (Korean legal hierarchy)
+  split.py                     # 결정론적 + LLM 분할 (fallback 지원)
+  extract.py                   # 필드 추출 + LLM scope (anthropic haiku)
+  draft.py                     # YAML 생성 + 중복 처리
+  registry.py                  # Source Registry 관리 (C2 대응)
+  version.py                   # 버전 변경 감지 + suspended 전이 (Phase 3)
+  migration.py                 # Relation migration guide 자동 생성 (Phase 3, C3 대응)
+  batch.py                     # 일괄 처리 config (Phase 3)
+config/scope-vocabulary.yaml   # scope 어휘 패턴 (C1 few-shot injection)
+```
 
 ### 유틸리티 스크립트
 
 | 스크립트 | 용도 |
 |----------|------|
+| `scripts/ingest.py --file F --doc-id D --version V` | Ingestion Pipeline (PDF/MD → draft YAML) |
+| `scripts/ingest.py --register-source --doc-id D ...` | 신규 원천 문서 등록 (confirm 필수) |
+| `scripts/ingest.py --version-update --doc-id D --new-version V --supersedes OLD` | 버전 변경 감지 + suspended 전이 + migration guide |
+| `scripts/ingest.py --config ingest-config.yaml` | 다수 문서 일괄 처리 |
 | `scripts/gate1.py [--apply]` | G1 자동검증 (draft → verified) |
 | `scripts/approve.py [--batch]` | G2 인간 승인 (verified → approved) |
 | `scripts/retrieve.py "<query>" [--threshold N] [--domain D]` | Agent 검색+인용 (multi-field IDF 스코어링) |
