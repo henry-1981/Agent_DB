@@ -16,6 +16,10 @@ from ingest.parse import get_parser
 from ingest.split import split_document
 from ingest.extract import extract_fields
 from ingest.draft import write_all_drafts
+from ingest.registry import (
+    UserAbortError,
+    register_new_source,
+)
 
 
 def _load_sources(root: Path) -> dict:
@@ -65,7 +69,10 @@ def run_pipeline(
     # Validate doc_id exists in _sources.yaml
     sources = _load_sources(root)
     if doc_id not in sources:
-        raise ValueError(f"Unknown doc_id: {doc_id!r} (not found in sources/_sources.yaml)")
+        raise ValueError(
+            f"Unknown doc_id: {doc_id!r} (not found in sources/_sources.yaml). "
+            "Use --register-source to register a new source first."
+        )
 
     source_title = sources[doc_id]["title"]
 
@@ -123,7 +130,53 @@ def main() -> None:
     parser.add_argument("--domain", default=None, help="Override domain (default: from _domain.yaml)")
     parser.add_argument("--dry-run", action="store_true", help="Preview without writing YAML files")
     parser.add_argument("--force", action="store_true", help="Overwrite existing files")
+
+    # --register-source: register a new source document
+    parser.add_argument(
+        "--register-source", action="store_true",
+        help="Register a new source document (requires --title, --authority-level, --publisher)",
+    )
+    parser.add_argument("--title", help="Document title (for --register-source)")
+    parser.add_argument("--authority-level", help="Authority level (for --register-source)")
+    parser.add_argument("--publisher", help="Publisher (for --register-source)")
+    parser.add_argument("--notes", default="", help="Notes (for --register-source)")
     args = parser.parse_args()
+
+    if args.register_source:
+        # Validate required fields for registration
+        missing = []
+        for field in ("title", "authority_level", "publisher"):
+            if not getattr(args, field):
+                missing.append(f"--{field.replace('_', '-')}")
+        if missing:
+            parser.error(f"--register-source requires: {', '.join(missing)}")
+
+        domain = args.domain
+        if domain is None:
+            root = Path(__file__).resolve().parent.parent
+            domain = _load_default_domain(root)
+
+        try:
+            register_new_source(
+                doc_id=args.doc_id,
+                title=args.title,
+                version=args.version,
+                authority_level=args.authority_level,
+                file_path=args.file,
+                publisher=args.publisher,
+                notes=args.notes,
+                domain=domain,
+                root=Path(__file__).resolve().parent.parent,
+            )
+        except ValueError as e:
+            print(f"Error: {e}", file=sys.stderr)
+            sys.exit(1)
+        except UserAbortError as e:
+            print(f"Aborted: {e}", file=sys.stderr)
+            sys.exit(1)
+
+        print(f"\nSource '{args.doc_id}' registered successfully.")
+        return
 
     try:
         summary = run_pipeline(

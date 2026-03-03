@@ -6,6 +6,8 @@ for YAML serialization as draft Rule Units.
 
 from __future__ import annotations
 
+import json
+import os
 import re
 from pathlib import Path
 
@@ -73,6 +75,138 @@ def determine_authority(
     return sources[doc_id]["authority_level"]
 
 
+# ── LLM scope extraction (Phase 2) ──────────────────────────────────
+
+
+def _load_scope_vocabulary(root: Path) -> dict:
+    """Load scope vocabulary from config/scope-vocabulary.yaml."""
+    vocab_path = root / "config" / "scope-vocabulary.yaml"
+    if not vocab_path.exists():
+        return {}
+    with open(vocab_path) as f:
+        return yaml.safe_load(f) or {}
+
+
+def _build_scope_prompt(text: str, location: str, few_shot_examples: str) -> str:
+    """Build the scope extraction prompt (RFC Section 5.2)."""
+    return (
+        "You are extracting scope (application conditions) from a Korean regulatory rule.\n"
+        "\n"
+        "Rule text:\n"
+        f"{text}\n"
+        "\n"
+        f"Source: {location}\n"
+        "\n"
+        "Extract 3-7 scope items. Each item should describe:\n"
+        "- WHEN or WHERE this rule applies\n"
+        "- WHO is affected\n"
+        "- WHAT conditions trigger this rule\n"
+        "\n"
+        "Rules:\n"
+        "1. Use Korean language for scope items\n"
+        "2. Each scope item should be a concise phrase (not a sentence)\n"
+        "3. DO NOT summarize or paraphrase the rule text\n"
+        "4. DO NOT generate new content — only extract conditions already present in the text\n"
+        "5. If the text contains enumerated conditions, list each as a separate scope item\n"
+        "6. Use vocabulary consistent with these reference examples:\n"
+        f"{few_shot_examples}\n"
+        "\n"
+        'Return JSON:\n'
+        '{"scope": ["item1", "item2", ...], "reasoning": "..."}'
+    )
+
+
+def _format_few_shot_examples(vocabulary: dict) -> str:
+    """Format vocabulary patterns as few-shot examples for the prompt."""
+    patterns = vocabulary.get("patterns", {})
+    if not patterns:
+        return "(no reference examples available)"
+    lines = []
+    for category, items in patterns.items():
+        lines.append(f"  {category}: {items}")
+    return "\n".join(lines)
+
+
+def extract_scope_llm(
+    text: str, doc_id: str, location: str, root: Path | None = None
+) -> list[str]:
+    """Extract scope items from rule text using LLM (anthropic API).
+
+    Uses claude-haiku-4-5-20251001 model.
+    Gracefully returns [] if anthropic not installed or API key missing.
+    Loads few-shot examples from config/scope-vocabulary.yaml.
+    """
+    try:
+        import anthropic
+    except ImportError:
+        return []
+
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    if not api_key:
+        return []
+
+    if root is None:
+        root = Path(__file__).resolve().parent.parent.parent
+
+    vocabulary = _load_scope_vocabulary(root)
+    few_shot = _format_few_shot_examples(vocabulary)
+    prompt = _build_scope_prompt(text, location, few_shot)
+
+    try:
+        client = anthropic.Anthropic(api_key=api_key)
+        message = client.messages.create(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=1024,
+            messages=[{"role": "user", "content": prompt}],
+        )
+
+        resp_text = message.content[0].text.strip()
+        # Handle markdown code blocks in response
+        if resp_text.startswith("```"):
+            resp_text = resp_text.split("\n", 1)[1].rsplit("```", 1)[0]
+        data = json.loads(resp_text)
+
+        scope = data.get("scope", [])
+        if isinstance(scope, list) and all(isinstance(s, str) for s in scope):
+            return scope
+        return []
+    except Exception:
+        return []
+
+
+def check_scope_vocabulary_consistency(
+    generated_scope: list[str], vocabulary: dict
+) -> float:
+    """Measure consistency with established vocabulary. Returns 0.0~1.0.
+
+    Checks how many generated scope items share substrings with
+    vocabulary patterns. Warning if < 0.6.
+    """
+    patterns = vocabulary.get("patterns", {})
+    if not patterns or not generated_scope:
+        return 0.0
+
+    # Collect all known vocabulary items
+    known_items: list[str] = []
+    for items in patterns.values():
+        known_items.extend(items)
+
+    if not known_items:
+        return 0.0
+
+    matches = 0
+    for scope_item in generated_scope:
+        for known in known_items:
+            # Check bidirectional substring overlap (3+ char tokens)
+            scope_tokens = {t for t in scope_item.split() if len(t) >= 3}
+            known_tokens = {t for t in known.split() if len(t) >= 3}
+            if scope_tokens & known_tokens:
+                matches += 1
+                break
+
+    return matches / len(generated_scope)
+
+
 def extract_fields(
     candidate: RuleCandidate,
     doc_id: str,
@@ -84,6 +218,8 @@ def extract_fields(
 
     Returns dict ready for YAML serialization as a draft Rule Unit.
     """
+    if root is None:
+        root = Path(__file__).resolve().parent.parent.parent
     return {
         "rule_id": generate_rule_id(doc_id, candidate, domain),
         "text": candidate.section.text,
@@ -92,7 +228,9 @@ def extract_fields(
             "version": version,
             "location": candidate.section.location,
         },
-        "scope": [],  # MVP: empty, Phase 2 adds LLM extraction
+        "scope": extract_scope_llm(
+            candidate.section.text, doc_id, candidate.section.location, root
+        ),
         "authority": determine_authority(doc_id, root),
         "status": "draft",
     }

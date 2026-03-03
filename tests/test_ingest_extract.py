@@ -1,5 +1,9 @@
 """Tests for ingest/extract.py — field extraction from RuleCandidates."""
 
+import json
+import os
+from unittest.mock import MagicMock, patch
+
 import pytest
 import yaml
 
@@ -10,6 +14,10 @@ from ingest.extract import (
     generate_rule_id,
     determine_authority,
     extract_fields,
+    extract_scope_llm,
+    _build_scope_prompt,
+    _load_scope_vocabulary,
+    check_scope_vocabulary_consistency,
 )
 
 
@@ -210,3 +218,199 @@ class TestExtractFields:
         candidate = RuleCandidate(section=section, suffix="main")
         with pytest.raises(KeyError, match="Unknown doc_id"):
             extract_fields(candidate, "unknown-doc", "1.0", root=tmp_path)
+
+
+# ── LLM scope extraction ────────────────────────────────────────────
+
+class TestExtractScopeLlm:
+    def test_no_anthropic(self, monkeypatch, tmp_path):
+        """Returns [] when anthropic is not installed."""
+        import ingest.extract as mod
+        original_import = __builtins__.__import__ if hasattr(__builtins__, '__import__') else __import__
+
+        def mock_import(name, *args, **kwargs):
+            if name == "anthropic":
+                raise ImportError("no anthropic")
+            return original_import(name, *args, **kwargs)
+
+        monkeypatch.setattr("builtins.__import__", mock_import)
+        result = mod.extract_scope_llm("text", "doc", "제7조", root=tmp_path)
+        assert result == []
+
+    def test_no_api_key(self, monkeypatch, tmp_path):
+        """Returns [] when ANTHROPIC_API_KEY is not set."""
+        monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+        # Provide a mock anthropic module so import succeeds
+        mock_anthropic = MagicMock()
+        with patch.dict("sys.modules", {"anthropic": mock_anthropic}):
+            from ingest.extract import extract_scope_llm as fn
+            result = fn("text", "doc", "제7조", root=tmp_path)
+        assert result == []
+
+    def test_mock_success(self, monkeypatch, tmp_path):
+        """Returns scope list from mocked API response."""
+        monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key")
+
+        scope_items = ["금품류 제공 금지 원칙", "사업자 의무"]
+        resp_json = json.dumps({"scope": scope_items, "reasoning": "test"})
+
+        mock_message = MagicMock()
+        mock_message.content = [MagicMock(text=resp_json)]
+        mock_client = MagicMock()
+        mock_client.messages.create.return_value = mock_message
+        mock_anthropic = MagicMock()
+        mock_anthropic.Anthropic.return_value = mock_client
+
+        with patch.dict("sys.modules", {"anthropic": mock_anthropic}):
+            from ingest.extract import extract_scope_llm as fn
+            result = fn("사업자는 금품류를 제공하여서는 아니된다.",
+                        "kmdia-fc", "제5조 제1항", root=tmp_path)
+
+        assert result == scope_items
+        mock_client.messages.create.assert_called_once()
+
+    def test_mock_success_with_markdown_block(self, monkeypatch, tmp_path):
+        """Handles response wrapped in markdown code block."""
+        monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key")
+
+        scope_items = ["기부행위 허용 원칙"]
+        resp_text = '```json\n{"scope": ' + json.dumps(scope_items) + ', "reasoning": "ok"}\n```'
+
+        mock_message = MagicMock()
+        mock_message.content = [MagicMock(text=resp_text)]
+        mock_client = MagicMock()
+        mock_client.messages.create.return_value = mock_message
+        mock_anthropic = MagicMock()
+        mock_anthropic.Anthropic.return_value = mock_client
+
+        with patch.dict("sys.modules", {"anthropic": mock_anthropic}):
+            from ingest.extract import extract_scope_llm as fn
+            result = fn("text", "doc", "제7조", root=tmp_path)
+
+        assert result == scope_items
+
+    def test_api_error(self, monkeypatch, tmp_path):
+        """Returns [] when API call raises an exception."""
+        monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key")
+
+        mock_client = MagicMock()
+        mock_client.messages.create.side_effect = RuntimeError("API error")
+        mock_anthropic = MagicMock()
+        mock_anthropic.Anthropic.return_value = mock_client
+
+        with patch.dict("sys.modules", {"anthropic": mock_anthropic}):
+            from ingest.extract import extract_scope_llm as fn
+            result = fn("text", "doc", "제7조", root=tmp_path)
+
+        assert result == []
+
+
+class TestBuildScopePrompt:
+    def test_contains_text_and_examples(self):
+        prompt = _build_scope_prompt(
+            "사업자는 금품류를 제공하여서는 아니된다.",
+            "제5조 제1항",
+            "principle: ['금품류 제공 금지 원칙']",
+        )
+        assert "사업자는 금품류를 제공하여서는 아니된다." in prompt
+        assert "제5조 제1항" in prompt
+        assert "금품류 제공 금지 원칙" in prompt
+        assert "3-7 scope items" in prompt
+
+    def test_contains_instruction_rules(self):
+        prompt = _build_scope_prompt("text", "loc", "examples")
+        assert "DO NOT summarize" in prompt
+        assert "Korean language" in prompt
+
+
+class TestLoadScopeVocabulary:
+    def test_loads_existing_file(self, tmp_path):
+        config_dir = tmp_path / "config"
+        config_dir.mkdir()
+        vocab = {"patterns": {"principle": ["테스트 원칙"]}}
+        with open(config_dir / "scope-vocabulary.yaml", "w") as f:
+            yaml.dump(vocab, f)
+        result = _load_scope_vocabulary(tmp_path)
+        assert result["patterns"]["principle"] == ["테스트 원칙"]
+
+    def test_missing_file_returns_empty(self, tmp_path):
+        result = _load_scope_vocabulary(tmp_path)
+        assert result == {}
+
+
+class TestScopeVocabularyConsistency:
+    def test_full_match(self):
+        vocab = {"patterns": {"principle": ["금품류 제공 금지 원칙"]}}
+        score = check_scope_vocabulary_consistency(
+            ["금품류 제공 금지 원칙"], vocab
+        )
+        assert score == 1.0
+
+    def test_partial_match(self):
+        vocab = {"patterns": {
+            "principle": ["금품류 제공 금지 원칙"],
+            "condition": ["사회통념상 인정 범위"],
+        }}
+        score = check_scope_vocabulary_consistency(
+            ["금품류 관련 규정", "완전히 새로운 항목"], vocab
+        )
+        # "금품류 관련 규정" shares token "금품류" with known → 1 match / 2 items = 0.5
+        assert 0.0 < score < 1.0
+
+    def test_no_match(self):
+        vocab = {"patterns": {"principle": ["가나다라"]}}
+        score = check_scope_vocabulary_consistency(
+            ["완전히 다른 것"], vocab
+        )
+        assert score == 0.0
+
+    def test_empty_scope(self):
+        vocab = {"patterns": {"principle": ["원칙"]}}
+        assert check_scope_vocabulary_consistency([], vocab) == 0.0
+
+    def test_empty_vocabulary(self):
+        assert check_scope_vocabulary_consistency(["아이템"], {}) == 0.0
+
+
+class TestExtractFieldsCallsScope:
+    """Verify extract_fields integrates LLM scope extraction."""
+
+    def _setup_env(self, tmp_path, doc_id="kmdia-fc"):
+        src_dir = tmp_path / "sources"
+        src_dir.mkdir()
+        with open(src_dir / "_sources.yaml", "w") as f:
+            yaml.dump({"sources": {doc_id: {"authority_level": "regulation"}}}, f)
+
+    def test_uses_llm_scope(self, tmp_path, monkeypatch):
+        """extract_fields calls extract_scope_llm (mocked)."""
+        self._setup_env(tmp_path)
+        expected_scope = ["기부행위 허용 원칙", "목적 제한"]
+        monkeypatch.setattr(
+            "ingest.extract.extract_scope_llm",
+            lambda text, doc_id, location, root=None: expected_scope,
+        )
+        section = Section(
+            heading="제7조", level=2,
+            text="사업자는 기부행위를 할 수 있다.",
+            location="제7조 제1항",
+        )
+        candidate = RuleCandidate(section=section, suffix="main")
+        result = extract_fields(candidate, "kmdia-fc", "2022.04", root=tmp_path)
+        assert result["scope"] == expected_scope
+
+    def test_graceful_degradation(self, tmp_path, monkeypatch):
+        """extract_fields returns [] scope when LLM unavailable."""
+        self._setup_env(tmp_path)
+        monkeypatch.setattr(
+            "ingest.extract.extract_scope_llm",
+            lambda text, doc_id, location, root=None: [],
+        )
+        section = Section(
+            heading="제5조", level=1, text="text", location="제5조 제1항",
+        )
+        candidate = RuleCandidate(section=section, suffix="main")
+        result = extract_fields(candidate, "kmdia-fc", "2022.04", root=tmp_path)
+        assert result["scope"] == []
+        assert set(result.keys()) == {
+            "rule_id", "text", "source_ref", "scope", "authority", "status",
+        }
