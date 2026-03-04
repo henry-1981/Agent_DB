@@ -174,6 +174,67 @@ def extract_scope_llm(
         return []
 
 
+# ── Heuristic scope extraction (API-free fallback) ─────────────────
+
+
+def _vocabulary_item_matches_text(item: str, text: str) -> bool:
+    """Check if a vocabulary item's key tokens appear in the text.
+
+    Tokens shorter than 2 characters are ignored.
+    Requires at least half of the item's tokens to be found in text.
+    """
+    tokens = [t for t in item.split() if len(t) >= 2]
+    if not tokens:
+        return False
+    threshold = max(1, len(tokens) // 2)
+    matched = sum(1 for t in tokens if t in text)
+    return matched >= threshold
+
+
+def extract_scope_heuristic(
+    text: str,
+    location: str,
+    heading: str,
+    root: Path | None = None,
+) -> list[str]:
+    """Extract scope items using keyword matching against scope-vocabulary.yaml.
+
+    Deterministic, no API required. Always returns at least 1 scope item.
+
+    Strategy:
+    1. Match vocabulary items whose key tokens appear in the rule text.
+    2. If no vocabulary matches, derive scope from the heading.
+    3. Fallback: generate a location-based scope item.
+    """
+    if root is None:
+        root = Path(__file__).resolve().parent.parent.parent
+
+    vocabulary = _load_scope_vocabulary(root)
+    scope: list[str] = []
+
+    # Strategy 1: vocabulary keyword matching
+    patterns = vocabulary.get("patterns", {})
+    for _category, items in patterns.items():
+        for item in items:
+            if _vocabulary_item_matches_text(item, text):
+                scope.append(item)
+
+    if scope:
+        return scope
+
+    # Strategy 2: heading-based scope
+    heading_clean = re.sub(r"제\d+조\s*", "", heading).strip("() ")
+    if heading_clean:
+        scope.append(f"{heading_clean} 관련 규정")
+        return scope
+
+    # Strategy 3: location-based fallback (always produces output)
+    art_match = _ARTICLE_RE.search(location)
+    art_label = f"제{art_match.group(1)}조" if art_match else location
+    scope.append(f"{art_label} 적용 범위")
+    return scope
+
+
 def check_scope_vocabulary_consistency(
     generated_scope: list[str], vocabulary: dict
 ) -> float:
@@ -220,6 +281,19 @@ def extract_fields(
     """
     if root is None:
         root = Path(__file__).resolve().parent.parent.parent
+
+    # Scope extraction: LLM first, heuristic fallback
+    scope = extract_scope_llm(
+        candidate.section.text, doc_id, candidate.section.location, root
+    )
+    if not scope:
+        scope = extract_scope_heuristic(
+            candidate.section.text,
+            candidate.section.location,
+            candidate.section.heading,
+            root,
+        )
+
     return {
         "rule_id": generate_rule_id(doc_id, candidate, domain),
         "text": candidate.section.text,
@@ -228,9 +302,7 @@ def extract_fields(
             "version": version,
             "location": candidate.section.location,
         },
-        "scope": extract_scope_llm(
-            candidate.section.text, doc_id, candidate.section.location, root
-        ),
+        "scope": scope,
         "authority": determine_authority(doc_id, root),
         "status": "draft",
     }

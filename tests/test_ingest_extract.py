@@ -15,8 +15,10 @@ from ingest.extract import (
     determine_authority,
     extract_fields,
     extract_scope_llm,
+    extract_scope_heuristic,
     _build_scope_prompt,
     _load_scope_vocabulary,
+    _vocabulary_item_matches_text,
     check_scope_vocabulary_consistency,
 )
 
@@ -167,7 +169,8 @@ class TestExtractFields:
             "version": "2022.04",
             "location": "제7조 제1항",
         }
-        assert result["scope"] == []
+        assert isinstance(result["scope"], list)
+        assert len(result["scope"]) >= 1  # heuristic always produces scope
         assert result["authority"] == "regulation"
         assert result["status"] == "draft"
 
@@ -372,6 +375,107 @@ class TestScopeVocabularyConsistency:
         assert check_scope_vocabulary_consistency(["아이템"], {}) == 0.0
 
 
+# ── Heuristic scope extraction ─────────────────────────────────────
+
+
+class TestVocabularyItemMatchesText:
+    def test_exact_tokens_match(self):
+        assert _vocabulary_item_matches_text(
+            "금품류 제공 금지 원칙",
+            "사업자는 금품류를 제공하거나 금지 사항을 위반할 수 없다.",
+        )
+
+    def test_partial_token_match_above_threshold(self):
+        # 4 tokens: 금품류, 제공, 금지, 원칙. Need >=2. Text has 금품류, 제공.
+        assert _vocabulary_item_matches_text(
+            "금품류 제공 금지 원칙",
+            "금품류 제공에 관한 규정",
+        )
+
+    def test_no_match(self):
+        assert not _vocabulary_item_matches_text(
+            "금품류 제공 금지 원칙",
+            "학술대회 참가 지원에 관한 사항",
+        )
+
+    def test_single_token_item(self):
+        # "위탁 판매" has 2 tokens of len>=2
+        assert _vocabulary_item_matches_text(
+            "위탁 판매",
+            "위탁 판매를 통한 거래",
+        )
+
+    def test_short_tokens_ignored(self):
+        # Single-char tokens should not count as matches
+        assert not _vocabulary_item_matches_text(
+            "A B 가",
+            "A B 가 나 다",
+        )
+
+
+class TestExtractScopeHeuristic:
+    def _setup_vocab(self, tmp_path):
+        config_dir = tmp_path / "config"
+        config_dir.mkdir()
+        vocab = {
+            "patterns": {
+                "principle": ["금품류 제공 금지 원칙", "기부행위 허용 원칙"],
+                "target": ["보건의료인 정의"],
+                "mechanism": ["위탁 판매", "마케팅 대행사"],
+            }
+        }
+        with open(config_dir / "scope-vocabulary.yaml", "w") as f:
+            yaml.dump(vocab, f, allow_unicode=True)
+
+    def test_matches_vocabulary(self, tmp_path):
+        self._setup_vocab(tmp_path)
+        result = extract_scope_heuristic(
+            "사업자는 금품류를 제공하여서는 아니된다. 금지 원칙.",
+            "제5조 제1항", "제5조 (금품류 제공의 제한)", root=tmp_path,
+        )
+        assert len(result) >= 1
+        assert any("금품류" in item for item in result)
+
+    def test_multiple_category_matches(self, tmp_path):
+        self._setup_vocab(tmp_path)
+        result = extract_scope_heuristic(
+            "금품류 제공을 금지하며, 위탁 판매를 통한 거래도 불가하다.",
+            "제5조 제1항", "", root=tmp_path,
+        )
+        assert len(result) >= 2
+
+    def test_no_vocab_match_uses_heading(self, tmp_path):
+        self._setup_vocab(tmp_path)
+        result = extract_scope_heuristic(
+            "완전히 새로운 주제에 대한 규정입니다.",
+            "제99조 제1항", "제99조 (신규 조항)", root=tmp_path,
+        )
+        assert len(result) >= 1
+        assert any("신규 조항" in item for item in result)
+
+    def test_no_vocab_no_heading_uses_location(self, tmp_path):
+        self._setup_vocab(tmp_path)
+        result = extract_scope_heuristic(
+            "완전히 새로운 텍스트.",
+            "제99조 제1항", "", root=tmp_path,
+        )
+        assert len(result) >= 1
+        assert any("제99조" in item for item in result)
+
+    def test_empty_vocab_file_still_produces_scope(self, tmp_path):
+        # No vocab file at all
+        result = extract_scope_heuristic(
+            "사업자는 학술대회를 지원할 수 있다.",
+            "제8조 제1항", "제8조 (학술대회의 지원)", root=tmp_path,
+        )
+        assert len(result) >= 1
+
+    def test_never_returns_empty(self, tmp_path):
+        """Heuristic must always return at least 1 scope item."""
+        result = extract_scope_heuristic(".", "제1조", "", root=tmp_path)
+        assert len(result) >= 1
+
+
 class TestExtractFieldsCallsScope:
     """Verify extract_fields integrates LLM scope extraction."""
 
@@ -398,19 +502,21 @@ class TestExtractFieldsCallsScope:
         result = extract_fields(candidate, "kmdia-fc", "2022.04", root=tmp_path)
         assert result["scope"] == expected_scope
 
-    def test_graceful_degradation(self, tmp_path, monkeypatch):
-        """extract_fields returns [] scope when LLM unavailable."""
+    def test_heuristic_fallback_when_llm_unavailable(self, tmp_path, monkeypatch):
+        """extract_fields uses heuristic scope when LLM returns empty."""
         self._setup_env(tmp_path)
         monkeypatch.setattr(
             "ingest.extract.extract_scope_llm",
             lambda text, doc_id, location, root=None: [],
         )
         section = Section(
-            heading="제5조", level=1, text="text", location="제5조 제1항",
+            heading="제5조 (금품류 제공의 제한)", level=1,
+            text="사업자는 금품류를 제공하여서는 아니 된다.",
+            location="제5조 제1항",
         )
         candidate = RuleCandidate(section=section, suffix="main")
         result = extract_fields(candidate, "kmdia-fc", "2022.04", root=tmp_path)
-        assert result["scope"] == []
+        assert len(result["scope"]) >= 1  # heuristic fallback provides scope
         assert set(result.keys()) == {
             "rule_id", "text", "source_ref", "scope", "authority", "status",
         }
