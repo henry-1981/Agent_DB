@@ -14,6 +14,8 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+from datetime import datetime, timezone
+
 import jsonschema
 import yaml
 
@@ -148,3 +150,38 @@ def create_relation(
         yaml.dump(data, f, allow_unicode=True, default_flow_style=False, sort_keys=False)
 
     return filepath
+
+
+def approve_relation(
+    relation_id: str,
+    reviewer: str,
+    root: Path | None = None,
+) -> dict:
+    """Approve a relation (draft/verified -> approved).
+
+    Adds approval metadata and writes back to file.
+
+    Raises:
+        FileNotFoundError: if relation_id not found.
+    """
+    base = root or ROOT
+    path = _find_relation_file(relation_id, base)
+    if path is None:
+        raise FileNotFoundError(f"Relation not found: {relation_id}")
+
+    with open(path, encoding="utf-8") as f:
+        data = yaml.safe_load(f)
+
+    if data.get("status") == "approved":
+        return data  # already approved, no change
+
+    data["status"] = "approved"
+    data["approval"] = {
+        "reviewer": reviewer,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    }
+
+    with open(path, "w", encoding="utf-8") as f:
+        yaml.dump(data, f, allow_unicode=True, default_flow_style=False, sort_keys=False)
+
+    return data

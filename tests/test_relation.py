@@ -8,7 +8,7 @@ import yaml
 
 import jsonschema
 
-from relation import create_relation, list_relations, validate_relation
+from relation import approve_relation, create_relation, list_relations, validate_relation
 
 SCHEMA_SRC = Path(__file__).resolve().parent.parent / "schemas" / "rule-relation.schema.yaml"
 
@@ -197,3 +197,48 @@ class TestCreateRelation:
                 registered_by="HB",
                 root=tmp_path,
             )
+
+
+class TestApproveRelation:
+    def _make_draft_rel(self, tmp_path):
+        """Create a draft relation for approval testing."""
+        rel_dir = tmp_path / "relations"
+        rel_dir.mkdir(exist_ok=True)
+        _copy_schema(tmp_path)
+        data = {
+            "relation_id": "rel-approve-001",
+            "type": "excepts",
+            "source_rule": "doc-art2-p1-main",
+            "target_rule": "doc-art1-p1-main",
+            "condition": "Test condition for approval",
+            "resolution": "Apply source rule when condition met",
+            "authority_basis": "Test basis",
+            "registered_by": "HB",
+            "status": "draft",
+        }
+        path = rel_dir / "rel-approve-001.yaml"
+        path.write_text(yaml.dump(data, allow_unicode=True), encoding="utf-8")
+        return tmp_path
+
+    def test_approve_draft_relation(self, tmp_path):
+        env = self._make_draft_rel(tmp_path)
+        result = approve_relation("rel-approve-001", reviewer="HB", root=env)
+        assert result["status"] == "approved"
+        assert "approval" in result
+        assert result["approval"]["reviewer"] == "HB"
+
+        # Verify file was updated
+        path = env / "relations" / "rel-approve-001.yaml"
+        with open(path) as f:
+            saved = yaml.safe_load(f)
+        assert saved["status"] == "approved"
+
+    def test_approve_already_approved_skips(self, rel_env):
+        # rel-test-001 is already approved
+        result = approve_relation("rel-test-001", reviewer="HB", root=rel_env)
+        assert result["status"] == "approved"  # unchanged
+
+    def test_approve_not_found(self, tmp_path):
+        (tmp_path / "relations").mkdir()
+        with pytest.raises(FileNotFoundError):
+            approve_relation("rel-ghost-001", reviewer="HB", root=tmp_path)
