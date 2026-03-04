@@ -185,3 +185,103 @@ def approve_relation(
         yaml.dump(data, f, allow_unicode=True, default_flow_style=False, sort_keys=False)
 
     return data
+
+
+def format_relation_table(relations: list[dict]) -> str:
+    """Format relations as a human-readable table."""
+    if not relations:
+        return "No relations found."
+
+    lines = [f"{'ID':<20} {'Type':<12} {'Source':<30} {'Target':<30} {'Status':<10}"]
+    lines.append("-" * 102)
+    for rel in relations:
+        lines.append(
+            f"{rel['relation_id']:<20} "
+            f"{rel.get('type', '?'):<12} "
+            f"{rel.get('source_rule', '?'):<30} "
+            f"{rel.get('target_rule', '?'):<30} "
+            f"{rel.get('status', '?'):<10}"
+        )
+    lines.append(f"\nTotal: {len(relations)} relation(s)")
+    return "\n".join(lines)
+
+
+def main():
+    """CLI entrypoint."""
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Manage Rule Relations.")
+    parser.add_argument("--list", action="store_true", help="List all relations")
+    parser.add_argument("--status", help="Filter by status (for --list)")
+    parser.add_argument("--validate", metavar="REL_ID", help="Validate a relation against schema")
+    parser.add_argument("--create", action="store_true", help="Create a new relation")
+    parser.add_argument("--approve", metavar="REL_ID", help="Approve a relation")
+    parser.add_argument("--reviewer", default="HB", help="Reviewer name (default: HB)")
+
+    # --create fields
+    parser.add_argument("--id", help="Relation ID (for --create)")
+    parser.add_argument("--type", help="Relation type: excepts|overrides|supersedes|unresolved")
+    parser.add_argument("--source", help="Source rule_id")
+    parser.add_argument("--target", help="Target rule_id")
+    parser.add_argument("--condition", help="When this relation fires")
+    parser.add_argument("--resolution", help="What Agent should do")
+    parser.add_argument("--basis", help="Authority basis")
+
+    args = parser.parse_args()
+
+    if args.list:
+        relations = list_relations(status_filter=args.status)
+        print(format_relation_table(relations))
+        return
+
+    if args.validate:
+        result = validate_relation(args.validate)
+        if result["valid"]:
+            print(f"VALID: {args.validate}")
+        else:
+            print(f"INVALID: {args.validate}")
+            for err in result["errors"]:
+                print(f"  - {err}")
+            sys.exit(1)
+        return
+
+    if args.approve:
+        try:
+            data = approve_relation(args.approve, reviewer=args.reviewer)
+            print(f"APPROVED: {args.approve} (reviewer: {data['approval']['reviewer']})")
+        except FileNotFoundError as e:
+            print(f"Error: {e}", file=sys.stderr)
+            sys.exit(1)
+        return
+
+    if args.create:
+        missing = []
+        for field in ("id", "type", "source", "target", "condition", "resolution", "basis"):
+            if not getattr(args, field):
+                missing.append(f"--{field}")
+        if missing:
+            parser.error(f"--create requires: {', '.join(missing)}")
+
+        try:
+            path = create_relation(
+                relation_id=args.id,
+                rel_type=args.type,
+                source_rule=args.source,
+                target_rule=args.target,
+                condition=args.condition,
+                resolution=args.resolution,
+                authority_basis=args.basis,
+                registered_by=args.reviewer,
+            )
+            print(f"Created: {path}")
+            print("Status: draft (use --approve to approve)")
+        except (ValueError, Exception) as e:
+            print(f"Error: {e}", file=sys.stderr)
+            sys.exit(1)
+        return
+
+    parser.print_help()
+
+
+if __name__ == "__main__":
+    main()

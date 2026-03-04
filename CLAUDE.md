@@ -299,6 +299,10 @@ config/scope-vocabulary.yaml   # scope 어휘 패턴 (C1 few-shot injection)
 | `scripts/scope_monitor.py [--warn]` | Scope 오염 조기 경보 |
 | `scripts/queue_monitor.py [--domain\|--json\|--warn]` | G2 승인 대기 큐 모니터 |
 | `scripts/context.py <rule_id>` | Traceability 계층 조회 |
+| `scripts/relation.py --list [--status S]` | Relation 목록 조회 |
+| `scripts/relation.py --create --id ID --type T ...` | Relation 생성 (status: draft) |
+| `scripts/relation.py --validate REL_ID` | Relation 스키마 검증 |
+| `scripts/relation.py --approve REL_ID [--reviewer R]` | Relation 승인 |
 
 ## Conventions
 
