@@ -5,6 +5,8 @@ from pathlib import Path
 
 import yaml
 
+import pytest
+
 from retrieve import (
     search_rules,
     format_citation,
@@ -14,6 +16,7 @@ from retrieve import (
     _text_score,
     _compute_idf,
     _relation_bonus,
+    _load_relations,
     RELATION_BONUS_CAP,
 )
 
@@ -336,6 +339,130 @@ class TestRelationBonus:
     def test_empty_inputs(self):
         assert _relation_bonus("", ["기부"], []) == 0.0
         assert _relation_bonus("rule-A", [], []) == 0.0
+
+    def test_circular_relation_no_double_count(self):
+        """Circular relations (A->B + B->A) should not double-count bonus."""
+        single_rel = [
+            {
+                "source_rule": "rule-A",
+                "target_rule": "rule-B",
+                "condition": "견본품 제공 AND 최소 수량",
+                "status": "approved",
+            }
+        ]
+        circular_rels = [
+            {
+                "source_rule": "rule-A",
+                "target_rule": "rule-B",
+                "condition": "견본품 제공 AND 최소 수량",
+                "status": "approved",
+            },
+            {
+                "source_rule": "rule-B",
+                "target_rule": "rule-A",
+                "condition": "견본품 제공 AND 최소 수량",
+                "status": "approved",
+            },
+        ]
+        single_bonus = _relation_bonus("rule-A", ["견본품"], single_rel)
+        circular_bonus = _relation_bonus("rule-A", ["견본품"], circular_rels)
+        assert single_bonus == circular_bonus
+
+    def test_empty_condition_skipped(self):
+        """Relations with empty condition contribute no bonus."""
+        relations = [
+            {
+                "source_rule": "rule-A",
+                "target_rule": "rule-B",
+                "condition": "",
+                "status": "approved",
+            }
+        ]
+        bonus = _relation_bonus("rule-A", ["기부"], relations)
+        assert bonus == 0.0
+
+
+class TestLoadRelations:
+    def test_skip_empty_condition(self, tmp_path):
+        """Relations with no condition are not loaded."""
+        rel_dir = tmp_path / "relations"
+        rel_dir.mkdir()
+        data = {
+            "relation_id": "rel-bad-001",
+            "type": "excepts",
+            "source_rule": "rule-A",
+            "target_rule": "rule-B",
+            "condition": "",
+            "status": "approved",
+        }
+        with open(rel_dir / "rel-bad-001.yaml", "w") as f:
+            yaml.dump(data, f)
+        result = _load_relations(tmp_path)
+        assert len(result) == 0
+
+    def test_skip_short_condition(self, tmp_path):
+        """Relations with condition shorter than 5 chars are not loaded."""
+        rel_dir = tmp_path / "relations"
+        rel_dir.mkdir()
+        data = {
+            "relation_id": "rel-bad-002",
+            "type": "excepts",
+            "source_rule": "rule-A",
+            "target_rule": "rule-B",
+            "condition": "abc",
+            "status": "approved",
+        }
+        with open(rel_dir / "rel-bad-002.yaml", "w") as f:
+            yaml.dump(data, f)
+        result = _load_relations(tmp_path)
+        assert len(result) == 0
+
+    def test_valid_condition_loaded(self, tmp_path):
+        """Relations with valid condition are loaded normally."""
+        rel_dir = tmp_path / "relations"
+        rel_dir.mkdir()
+        data = {
+            "relation_id": "rel-ok-001",
+            "type": "excepts",
+            "source_rule": "rule-A",
+            "target_rule": "rule-B",
+            "condition": "견본품 제공 AND 최소 수량",
+            "status": "approved",
+        }
+        with open(rel_dir / "rel-ok-001.yaml", "w") as f:
+            yaml.dump(data, f)
+        result = _load_relations(tmp_path)
+        assert len(result) == 1
+
+
+class TestThresholdValidation:
+    def test_negative_threshold_raises(self, tmp_path):
+        """Negative threshold raises ValueError."""
+        rules_dir = tmp_path / "rules"
+        rules_dir.mkdir()
+        with pytest.raises(ValueError, match="threshold must be between"):
+            search_rules("기부", root=tmp_path, threshold=-0.5)
+
+    def test_above_one_threshold_raises(self, tmp_path):
+        """Threshold > 1.0 raises ValueError."""
+        rules_dir = tmp_path / "rules"
+        rules_dir.mkdir()
+        with pytest.raises(ValueError, match="threshold must be between"):
+            search_rules("기부", root=tmp_path, threshold=1.5)
+
+    def test_boundary_zero_accepted(self, tmp_path):
+        """Threshold 0.0 is valid (returns all non-zero scores)."""
+        rules_dir = tmp_path / "rules"
+        rules_dir.mkdir()
+        result = search_rules("기부", root=tmp_path, threshold=0.0)
+        assert isinstance(result, list)
+
+    def test_boundary_one_accepted(self, tmp_path):
+        """Threshold 1.0 is valid (only perfect matches)."""
+        rules_dir = tmp_path / "rules"
+        rules_dir.mkdir()
+        result = search_rules("기부", root=tmp_path, threshold=1.0)
+        assert isinstance(result, list)
 
 
 # ========== Integration Tests ==========

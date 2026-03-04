@@ -155,6 +155,10 @@ def _load_relations(root: Path) -> list[dict]:
         with open(path, encoding="utf-8") as f:
             data = yaml.safe_load(f)
         if data and data.get("status") == "approved":
+            # condition is required (schema minLength: 5)
+            condition = data.get("condition", "")
+            if not condition or len(condition.strip()) < 5:
+                continue
             relations.append(data)
     return relations
 
@@ -167,11 +171,16 @@ def _relation_bonus(
         return 0.0
     total_kw = len(keywords)
     hits = 0
+    seen_pairs: set[frozenset[str]] = set()
     for rel in relations:
         src = rel.get("source_rule", "")
         tgt = rel.get("target_rule", "")
         if rule_id not in (src, tgt):
             continue
+        pair = frozenset((src, tgt))
+        if pair in seen_pairs:
+            continue
+        seen_pairs.add(pair)
         condition = rel.get("condition", "")
         for kw in keywords:
             if kw in condition:
@@ -207,6 +216,8 @@ def search_rules(
     include_relations: bool = True,
 ) -> list[dict]:
     """Search rules with multi-field scoring. Returns matched rules sorted by score."""
+    if not (0.0 <= threshold <= 1.0):
+        raise ValueError(f"threshold must be between 0.0 and 1.0, got {threshold}")
     base = root or ROOT
     rules = _load_rules(base)
     keywords = query.split()
