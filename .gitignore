@@ -5,3 +5,4 @@ __pycache__/
 *.egg-info/
 *.pdf
 docs/plans/
+council.config.yaml

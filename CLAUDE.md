@@ -256,16 +256,21 @@ pytest tests/test_clean.py::TestFilterP4P7::test_page_number_patterns  # 단일 
 
 ## Current State (2026-03-04)
 
-- **23 approved Rule Units** (kmdia-fc 18 + kmdia-fc-detail 5)
+- **234 Rule Units** (kmdia-fc 229 + kmdia-fc-detail 5)
+  - 23 approved (kmdia-fc 18 + kmdia-fc-detail 5)
+  - 197 verified (G1 통과, G2 대기)
+  - 14 draft (G1 중복 텍스트 reject)
 - **5 approved Rule Relations** (excepts 4 + unresolved 1)
-- **348 tests** 전부 통과
+- **376 tests** 전부 통과
 - **도메인 플러그인** Phase B 완료 (domains/ra/)
 - **test-legal 도메인** E2E 검증 완료 (domains/test-legal/) — 도메인 격리 실증
 - **retrieve.py multi-field 검색** — scope+text IDF 가중 스코어링, fuzzy 매칭, relation 보너스
 - **G1 텍스트 충실도** — pymupdf 기반 PDF 원문 대비 검증 (warning 전용)
 - **G1 scope-text 정합성** — anthropic API 기반 LLM 판정 (warning 전용)
 - **G2 큐 모니터** — verified 규칙 대기 현황·임계값 경보
-- **Ingestion Pipeline Phase 1+2+3** — PDF/Markdown → draft YAML 자동 변환 (LLM scope 추출 + 분할 판단 + Source Registry confirm 등록 + 버전 동기화 + 일괄 처리)
+- **Ingestion Pipeline Phase 1+2+3** — PDF/Markdown → draft YAML 자동 변환 (LLM scope 추출 + heuristic fallback + 분할 판단 + Source Registry confirm 등록 + 버전 동기화 + 일괄 처리)
+- **Heuristic Scope Extractor** — API 없이 scope 생성 (vocabulary 매칭 → heading 기반 → location fallback)
+- **Relation CLI** — `scripts/relation.py` (목록·검증·생성·승인)
 
 ### Ingestion Pipeline
 
@@ -275,7 +280,7 @@ scripts/ingest/
   ir.py                        # DocumentIR, Section, RuleCandidate
   parse.py                     # PDF/Markdown 파서 (Korean legal hierarchy)
   split.py                     # 결정론적 + LLM 분할 (fallback 지원)
-  extract.py                   # 필드 추출 + LLM scope (anthropic haiku)
+  extract.py                   # 필드 추출 + LLM scope (anthropic haiku) + heuristic fallback
   draft.py                     # YAML 생성 + 중복 처리
   registry.py                  # Source Registry 관리 (C2 대응)
   version.py                   # 버전 변경 감지 + suspended 전이 (Phase 3)
