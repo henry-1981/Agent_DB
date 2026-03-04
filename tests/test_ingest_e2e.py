@@ -356,23 +356,60 @@ class TestSchemaCompatibility:
                     f"Missing source_ref.{f} in {p.name}"
 
     def test_full_jsonschema_validate(self, pipeline_env, schema):
-        """Full jsonschema validation.
-
-        MVP produces scope=[] which violates minItems:1 in the schema.
-        We relax scope constraint for draft-status rules since scope
-        extraction is deferred to Phase 2.
-        """
+        """Full jsonschema validation — heuristic scope satisfies minItems:1."""
         import jsonschema
-
-        # Relax scope minItems for MVP draft output
-        relaxed = dict(schema)
-        relaxed["properties"] = dict(schema["properties"])
-        relaxed["properties"]["scope"] = {
-            "type": "array",
-            "items": {"type": "string"},
-        }
 
         _, _, _, paths = _run_pipeline(pipeline_env, SAMPLE_MD)
         for p in paths:
             loaded = yaml.safe_load(p.read_text(encoding="utf-8"))
-            jsonschema.validate(loaded, relaxed)
+            jsonschema.validate(loaded, schema)
+
+    def test_scope_non_empty(self, pipeline_env):
+        """Heuristic scope extractor always produces non-empty scope."""
+        _, _, _, paths = _run_pipeline(pipeline_env, SAMPLE_MD)
+        for p in paths:
+            loaded = yaml.safe_load(p.read_text(encoding="utf-8"))
+            assert len(loaded["scope"]) >= 1, f"Empty scope in {p.name}"
+
+
+# -- Test: Draft → G1 Pass (E2E) --------------------------------------------
+
+
+class TestDraftToGate1:
+    """Verify pipeline output passes G1 auto-verification.
+
+    This is the critical gap identified by the Agent Council:
+    previously, E2E tests only covered Parse→Draft without
+    verifying that output actually passes G1.
+    """
+
+    def test_all_drafts_pass_gate1(self, pipeline_env):
+        """Every draft from pipeline should pass G1 schema + source_ref checks."""
+        from gate1 import run_gate1
+
+        # Need domain config for authority check
+        domain_dir = pipeline_env / "domains" / "ra"
+        domain_dir.mkdir(parents=True)
+        (domain_dir / "authority_levels.yaml").write_text(yaml.dump({
+            "levels": {
+                "regulation": {"rank": 1, "label": "규약"},
+                "guideline": {"rank": 2, "label": "지침"},
+                "sop": {"rank": 3, "label": "SOP"},
+            }
+        }))
+        # Need schemas for G1 validation
+        schemas_dir = pipeline_env / "schemas"
+        schemas_dir.mkdir(exist_ok=True)
+        import shutil
+        src_schema = Path(__file__).resolve().parent.parent / "schemas" / "rule-unit.schema.yaml"
+        shutil.copy(src_schema, schemas_dir / "rule-unit.schema.yaml")
+
+        _, _, _, paths = _run_pipeline(pipeline_env, SAMPLE_MD)
+        assert len(paths) > 0, "No drafts produced"
+
+        for p in paths:
+            loaded = yaml.safe_load(p.read_text(encoding="utf-8"))
+            result = run_gate1(loaded, pipeline_env)
+            assert result["passed"], (
+                f"G1 FAIL for {loaded['rule_id']}: {result['errors']}"
+            )
