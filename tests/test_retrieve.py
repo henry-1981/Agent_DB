@@ -68,6 +68,7 @@ def test_format_citation_verified_has_warning():
     }
     citation = format_citation(rule)
     assert "[미승인]" in citation
+    assert "자동검증 완료, 인간 승인 대기중" in citation
 
 
 def test_format_citation_draft_blocked():

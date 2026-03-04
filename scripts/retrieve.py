@@ -276,7 +276,7 @@ def format_citation(rule: dict) -> str | None:
     if status == "approved":
         return f"[근거: {rule_id}] {text}"
     if status == "verified":
-        return f"[미승인] [근거: {rule_id}] {text}"
+        return f"[미승인] 자동검증 완료, 인간 승인 대기중. [근거: {rule_id}] {text}"
 
     return None
 
