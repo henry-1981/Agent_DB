@@ -1,0 +1,17 @@
+rule_id: kmdia-fc-art4-p2-item4
+text: '4. 사업자는 제2호 내지 제3호에 따라 기부하는 것 이
+
+  외에는 의학·의료기기 연구기관 등이나 보건의료인에
+
+  대한 직접적인 기부는 허용되지 아니한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제4조 제2항 제4호
+scope:
+- 기부행위 허용 원칙
+- 직접 기부 금지
+- 보건의료인 정의
+- 기부 후 신고 의무
+authority: regulation
+status: draft

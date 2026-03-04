@@ -1,0 +1,15 @@
+rule_id: kmdia-fc-art7-p3-item2
+text: '2. 평가기간 동안 평가용 제품의 소유권은 사업자 및
+
+  판매업자 등에게 있으며, 이를 이전하여서는 아니된
+
+  다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제7조 제3항 제2호
+scope:
+- 위탁 판매
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:59.039063+00:00'

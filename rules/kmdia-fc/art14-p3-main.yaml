@@ -1,0 +1,15 @@
+rule_id: kmdia-fc-art14-p3-main
+text: '③ 사업자는 시장조사가 양질의 의료기기 사용을 도모
+
+  하고 환자의 이익을 제고하기 위해 유용한 정보를 수
+
+  집하기 위한 활동이 되도록 하여야 한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제14조 제3항
+scope:
+- ③ 관련 규정
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:16.455351+00:00'

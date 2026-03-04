@@ -1,0 +1,16 @@
+rule_id: kmdia-fc-art18-p2-item4
+text: '4. 사업자는 학술대회(규약 제8조에 따라 학술대회 개
+
+  최·운영지원 신청을 한 학술대회 제외)당 1부스 사용
+
+  을 원칙으로 하되, 2부스를 초과하여 사용할 수 없다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제18조 제2항 제4호
+scope:
+- 기부행위 허용 원칙
+- 간주 제공 원칙
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:25.622372+00:00'

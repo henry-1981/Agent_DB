@@ -1,0 +1,24 @@
+rule_id: kmdia-fc-art4-p3-main
+text: '③ 제1항 제3호와 관련하여 협회는 해당 의학·의료기
+
+  기 연구기관 등의 사업계획의 적정성을 검토하거나 기
+
+  부할 사업자를 정함에 있어 같은 항 제1호에 부합하는
+
+  지 여부를 고려하여야 하며, 사업자의 기부행위가 협
+
+  회의 통지에 따라 적정하게 이루어졌는지 확인하여야
+
+  한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제4조 제3항
+scope:
+- 기부행위 허용 원칙
+- 직접 기부 금지
+- 기부행위 금지 조건
+- 기부 후 신고 의무
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:47.802833+00:00'

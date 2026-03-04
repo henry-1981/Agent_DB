@@ -1,0 +1,15 @@
+rule_id: kmdia-fc-art18-p3-main
+text: '③ 규약 제17조 제4항의 후단에 따른 “소액의 기념품
+
+  또는 판촉물”이라 함은 1만원 이내의 기념품 또는  판
+
+  촉물을 의미한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제18조 제3항
+scope:
+- ③ 관련 규정
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:26.672328+00:00'

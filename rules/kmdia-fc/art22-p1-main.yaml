@@ -1,0 +1,13 @@
+rule_id: kmdia-fc-art22-p1-main
+text: '① 협회는 다음 각 호에 해당하는 자료를 5년간 보존
+
+  하여야 한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제22조 제1항
+scope:
+- ① 관련 규정
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:34.918303+00:00'

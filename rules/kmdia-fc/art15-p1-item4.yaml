@@ -1,0 +1,15 @@
+rule_id: kmdia-fc-art15-p1-item4
+text: '4. 사업자가 보건의료전문가에게 강연 또는 자문을 의
+
+  뢰하는 경우 사전에 수행할 용역의 내용과 지급 금액
+
+  을 명시한 서면계약을 체결해야 한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제15조 제1항 제4호
+scope:
+- 서면 평가조건 명시 및 인수증
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:18.648891+00:00'

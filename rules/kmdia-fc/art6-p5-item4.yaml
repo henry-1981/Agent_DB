@@ -1,0 +1,19 @@
+rule_id: kmdia-fc-art6-p5-item4
+text: '4. 숙박비는 국내의 경우 1박당 20만원, 해외의 경우
+
+  1박당 35만원 이내에서 지원하며, 필요시 학술대회 개
+
+  최 1일전 숙박부터 학술대회 종료일까지의 숙박을 지
+
+  원할 수 있다. 단, 숙박비에 미니바, 영화, 세탁, 전화
+
+  등 숙박에 부수하는 비용은 포함하지 않는다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제6조 제5항 제4호
+scope:
+- 4. 관련 규정
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:57.295731+00:00'

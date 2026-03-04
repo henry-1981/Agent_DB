@@ -1,0 +1,17 @@
+rule_id: kmdia-fc-art23-p4-main
+text: '④ 위원회는 제2항에서 규정하는 이의 제기가 없을 때
+
+  에는 신속하게 결정안의 내용과 같은 취지의 조치를
+
+  하여야 한다.
+
+  제4장 보칙'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제23조 제4항
+scope:
+- ④ 관련 규정
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:36.326993+00:00'

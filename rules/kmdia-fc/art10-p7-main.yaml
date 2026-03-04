@@ -1,0 +1,15 @@
+rule_id: kmdia-fc-art10-p7-main
+text: '⑦ 사업자는 참가지원 업무처리에 대한 수수료로 본
+
+  기준 제4조 제4항에 따른 수수료를 협회에 납부하여
+
+  야 한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제10조 제7항
+scope:
+- ⑦ 관련 규정
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:07.606530+00:00'

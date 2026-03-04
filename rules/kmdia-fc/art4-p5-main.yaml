@@ -1,0 +1,19 @@
+rule_id: kmdia-fc-art4-p5-main
+text: '⑤ 규약 제7조 제1항 제5호에 따라 사업자는 기부금
+
+  품 전달이 완료된 후 10일 이내에 홈페이지를 통하여
+
+  집행신고서를 작성하여 기부 영수증 등의 기부 증빙자
+
+  료를 첨부해서 협회로 제출하여야 한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제4조 제5항
+scope:
+- 직접 기부 금지
+- 기부 후 신고 의무
+- 기부금품 전달 완료 후 10일 이내 협회 통보
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:50.162282+00:00'

@@ -1,0 +1,13 @@
+rule_id: kmdia-fc-art5-p6-main
+text: '⑥ 규약 제8조 제6항에 따른 환불은 다음 각 호와 같
+
+  이 한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제5조 제6항
+scope:
+- ⑥ 관련 규정
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:53.566455+00:00'

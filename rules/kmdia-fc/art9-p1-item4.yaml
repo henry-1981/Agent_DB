@@ -1,0 +1,12 @@
+rule_id: kmdia-fc-art9-p1-item4
+text: '4. 한국의료기기산업협회가 인정한 학회(해외학회 포
+
+  함), 학술기관·단체나 연구기관·단체'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제9조 제1항 제4호
+scope:
+- 4. 관련 규정
+authority: regulation
+status: draft

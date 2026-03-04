@@ -1,0 +1,11 @@
+rule_id: kmdia-fc-art24-p3-item3
+text: 3. 회원 제명 요청
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제24조 제3항 제3호
+scope:
+- 3. 관련 규정
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:37.771413+00:00'

@@ -1,0 +1,13 @@
+rule_id: kmdia-fc-art23-p2-main
+text: '② 제1항 사업자는 결정안을 통지 받은 날부터 10일
+
+  이내에 위원회에 서면으로 이의를 제기할 수 있다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제23조 제2항
+scope:
+- ② 관련 규정
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:35.763738+00:00'

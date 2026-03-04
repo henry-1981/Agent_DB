@@ -1,0 +1,18 @@
+rule_id: kmdia-fc-art8-p2-item4
+text: '4. 사업자는 해당 학술대회 종료 후 1개월 이내에 학
+
+  술대회 지원내역을 협회에서 정한 양식에 따라 협회에
+
+  통보하며, 협회는 사업자가 학술대회 지원을 적정하게
+
+  하였는지 확인한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제8조 제2항 제4호
+scope:
+- 최소 기간 1개월 이내 제한
+- 기부금품 전달 완료 후 10일 이내 협회 통보
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:45:01.868776+00:00'

@@ -1,0 +1,13 @@
+rule_id: kmdia-fc-art16-p3-main
+text: '③ 위원은 타인에게 자신을 대리하여 위원회에 참석하
+
+  게 할 수 없다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제16조 제3항
+scope:
+- ③ 관련 규정
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:21.106988+00:00'

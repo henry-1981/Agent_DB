@@ -1,0 +1,13 @@
+rule_id: kmdia-fc-art3-p1-main
+text: '① “의료기기”라 함은 의료기기법 제2조(정의)제1항
+
+  에서 정한 의료기기를 말한다'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제3조 제1항
+scope:
+- 보건의료인 정의
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:38.550872+00:00'

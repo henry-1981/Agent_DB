@@ -1,0 +1,15 @@
+rule_id: kmdia-fc-art5-p7-item2
+text: '2. 보건의료인에 대한 지원 내용은 발표자, 좌장, 토론
+
+  자가 학술대회 주최자로부터 지원받는 실비의 교통비,
+
+  등록비, 식대, 숙박비에 한한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제5조 제7항 제2호
+scope:
+- 보건의료인 정의
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:54.114622+00:00'

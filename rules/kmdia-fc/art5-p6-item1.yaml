@@ -1,0 +1,19 @@
+rule_id: kmdia-fc-art5-p6-item1
+text: '1. 규약 제8조 제3항에 따른 국내개최 학술대회의 경
+
+  우, 학술대회 주관자는 규약 제8조 제6항에 따라 반환
+
+  해야 할 잔액을 협회로 반환한다. 협회는 해당 학술대
+
+  회를 지원한 각 사업자가 차지하는 지원금 비율에 따
+
+  라 환불하여야 한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제5조 제6항 제1호
+scope:
+- 1. 관련 규정
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:53.014484+00:00'

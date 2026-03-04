@@ -1,0 +1,14 @@
+rule_id: kmdia-fc-art4-p4-item2
+text: '2. 기부금액이 1억원을 초과하는 경우 심의비등은
+
+  1,500,000원으로 한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제4조 제4항 제2호
+scope:
+- 직접 기부 금지
+- 기부 후 신고 의무
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:48.323770+00:00'

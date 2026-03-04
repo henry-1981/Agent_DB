@@ -1,0 +1,15 @@
+rule_id: kmdia-fc-art19-p1-main
+text: '① 위원회는 본 규약을 위반한 사실이 있다고 인정되
+
+  거나 협회에 신고된 내용의 처리를 위하여 필요한 조
+
+  사를 하여야 한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제19조 제1항
+scope:
+- 기부 후 신고 의무
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:26.941437+00:00'

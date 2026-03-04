@@ -1,0 +1,11 @@
+rule_id: kmdia-fc-art24-p3-item2
+text: 2. 관계당국 고발
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제24조 제3항 제2호
+scope:
+- 2. 관련 규정
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:37.544363+00:00'

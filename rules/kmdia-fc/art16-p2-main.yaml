@@ -1,0 +1,19 @@
+rule_id: kmdia-fc-art16-p2-main
+text: '② 위원회 또는 실무단에 소속한 사업자와 관계된 안
+
+  건을 다룰 경우, 그 위원 또는 실무단원은 해당 안건에
+
+  관한 심의 및 의결, 조사 등에 참여할 수 없다. 이 경우
+
+  당해 위원회의 재적수는 본 항에 따라 관련 위원수를
+
+  제외한 전체 위원수로 한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제16조 제2항
+scope:
+- ② 관련 규정
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:20.857238+00:00'

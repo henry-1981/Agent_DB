@@ -1,0 +1,19 @@
+rule_id: kmdia-fc-art15-p1-item5
+text: '5. 사업자는 강연료 또는 자문료의 회계처리 시 해당
+
+  강연자 선정 및 자문위원 위촉의 선정사유, 강연 및 자
+
+  문일시, 강연 및 자문내용, 참가자 명단 및 서명, 강연
+
+  및 자문내용의 활용 등에 대한 구체적인 증빙자료를
+
+  첨부하여야 5년간 보관하여야 한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제15조 제1항 제5호
+scope:
+- 기부금품 회계처리 시 증빙 의무
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:18.978558+00:00'

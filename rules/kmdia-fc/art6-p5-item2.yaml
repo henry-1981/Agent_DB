@@ -1,0 +1,16 @@
+rule_id: kmdia-fc-art6-p5-item2
+text: '2. 등록비는 사전등록이 원칙이며, 비용으로 송금한
+
+  날짜 기준환율을 적용한 한화 금액 또는 신용카드 청
+
+  구영수증의 금액을 적용한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제6조 제5항 제2호
+scope:
+- 기부행위 허용 원칙
+- 간주 제공 원칙
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:56.658038+00:00'

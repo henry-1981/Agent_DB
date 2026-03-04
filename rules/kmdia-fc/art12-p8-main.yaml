@@ -1,0 +1,20 @@
+rule_id: kmdia-fc-art12-p8-main
+text: '⑧ 규약 제11조 제8항의 경우는 해외에서 의료기기
+
+  제품설명회와 시술 및 진단기술의 습득·향상을 위하여
+
+  실시하는 강연자에 대하여 규약 제9조 내지 제11조에
+
+  서 허용하는 것에 준하여 실비 상당의 여비, 숙박, 식
+
+  음료 및 기념품 등 경제적 이익을 제공할 수 있다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제12조 제8항
+scope:
+- 기부행위 허용 원칙
+- 간주 제공 원칙
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:13.508279+00:00'

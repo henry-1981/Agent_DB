@@ -1,0 +1,16 @@
+rule_id: kmdia-fc-art4-p4-item1
+text: '1. 기부금액이 1억원 이하인 경우 심의비 또는 수수료
+
+  (이하 ‘심의비등’이라 한다)는 기부금액의 1.5% (100
+
+  원 이하 절삭)로 한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제4조 제4항 제1호
+scope:
+- 직접 기부 금지
+- 기부 후 신고 의무
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:48.076256+00:00'

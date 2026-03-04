@@ -1,0 +1,17 @@
+rule_id: kmdia-fc-art15-p2-main
+text: '② 사업자는 강연료 또는 자문료 지급이 완료된 후 강
+
+  연 또는 자문일시, 강연료 또는 자문료 지급내역 등을
+
+  협회에서 정한 신고양식에 따라 지급일 기준 20일 이
+
+  내에 협회에 신고하여야 한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제15조 제2항
+scope:
+- 기부 후 신고 의무
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:19.548761+00:00'

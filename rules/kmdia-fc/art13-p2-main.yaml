@@ -1,0 +1,17 @@
+rule_id: kmdia-fc-art13-p2-main
+text: '② 사업자는 정당한 사유 없이 동일 또는 유사한 내용
+
+  의 강연 또는 자문을 특정 보건의료인에게 반복적으로
+
+  의뢰하거나 과도하게 다수의 보건의료인에게 의뢰하
+
+  여서는 아니 된다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제13조 제2항
+scope:
+- 보건의료인 정의
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:15.238296+00:00'

@@ -1,0 +1,18 @@
+rule_id: kmdia-fc-art4-p2-item6
+text: '6. 사업자는 기부금품의 회계처리 시 기부행위의 일
+
+  자·대상·목적·규모 등에 대한 구체적인 증빙자료를 첨
+
+  부하여야 한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제4조 제2항 제6호
+scope:
+- 기부행위 허용 원칙
+- 직접 기부 금지
+- 기부행위 금지 조건
+- 기부금품 회계처리 시 증빙 의무
+- 기부 후 신고 의무
+authority: regulation
+status: draft

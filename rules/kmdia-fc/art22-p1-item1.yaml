@@ -1,0 +1,15 @@
+rule_id: kmdia-fc-art22-p1-item1
+text: '1. 제7조, 제8조, 제9조, 제10조, 제11조, 제12조, 제
+
+  14조 및 제17조에 따른 따른 사업자의 신고·제출·통
+
+  보자료, 협회의 관리자료 및 위원회의 심의·의결자료'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제22조 제1항 제1호
+scope:
+- 기부 후 신고 의무
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:33.797477+00:00'

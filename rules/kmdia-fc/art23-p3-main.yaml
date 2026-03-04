@@ -1,0 +1,17 @@
+rule_id: kmdia-fc-art23-p3-main
+text: '③ 위원회는 제2항의 이의제기가 있을 때에는 당해 사
+
+  업자에게 추가주장 및 입증기회를 부여하고 동 자료에
+
+  근거하여 30일 이내에 재심사를 한 후 그 결과에 따라
+
+  조치결정을 하여야 한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제23조 제3항
+scope:
+- ③ 관련 규정
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:36.056231+00:00'

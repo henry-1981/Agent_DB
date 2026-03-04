@@ -1,0 +1,10 @@
+rule_id: kmdia-fc-art20-p5-item3
+text: 3. 협회 이사회가 필요하다고 인정할 때
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제20조 제5항 제3호
+scope:
+- 3. 관련 규정
+authority: regulation
+status: draft

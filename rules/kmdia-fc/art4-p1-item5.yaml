@@ -1,0 +1,11 @@
+rule_id: kmdia-fc-art4-p1-item5
+text: 5. 총회, 이사회, 감사 등의 운영조직이 있을 것
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제4조 제1항 제5호
+scope:
+- 5. 관련 규정
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:44.869262+00:00'

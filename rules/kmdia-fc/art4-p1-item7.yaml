@@ -1,0 +1,13 @@
+rule_id: kmdia-fc-art4-p1-item7
+text: '7. 정기 또는 비정기적인 모임을 통해 의학연구활동을
+
+  하고 있을 것'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제4조 제1항 제7호
+scope:
+- 7. 관련 규정
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:45.357059+00:00'

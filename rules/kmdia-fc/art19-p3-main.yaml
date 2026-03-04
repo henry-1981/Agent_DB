@@ -1,0 +1,15 @@
+rule_id: kmdia-fc-art19-p3-main
+text: '③ 위원회는 제1항의 조사에 협조하지 아니하는 사업
+
+  자에 대하여 500만원 이하의 위약금을 부과하고 공정
+
+  거래위원회에 필요한 조치를 의뢰할 수 있다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제19조 제3항
+scope:
+- ③ 관련 규정
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:27.458106+00:00'

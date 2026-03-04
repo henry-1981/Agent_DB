@@ -1,0 +1,15 @@
+rule_id: kmdia-fc-art24-p4-main
+text: '④ 위원회는 제1항에 의한 경고 등의 조치를 받은 사업
+
+  자가 이에 따르지 않는다고 인정될 때에는 공정거래위
+
+  원회와 보건복지부에 필요한 조치를 의뢰할 수 있다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제24조 제4항
+scope:
+- ④ 관련 규정
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:38.304996+00:00'

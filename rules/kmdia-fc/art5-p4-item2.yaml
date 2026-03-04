@@ -1,0 +1,19 @@
+rule_id: kmdia-fc-art5-p4-item2
+text: '2. 총 지출은 학술대회와 관련한 식음료, 학술대회 주
+
+  체가 초청한 발표자, 좌장, 토론자에 대한 초청비, 강
+
+  연료, 대행사 수수료, 대관료, 단기고용 인력비, 인쇄·
+
+  광고비 등 학술대회 개최·운영과 관련한 지출의 총 합
+
+  계를 말한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제5조 제4항 제2호
+scope:
+- 마케팅 대행사
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:52.065986+00:00'

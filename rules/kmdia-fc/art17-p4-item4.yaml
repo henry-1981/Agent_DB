@@ -1,0 +1,17 @@
+rule_id: kmdia-fc-art17-p4-item4
+text: '4. 시판후조사에 참여하는 보건의료인에 대한 보수는
+
+  조사 목적에 비추어 필요한 사항의 조사가 완전하게
+
+  수행되어 사업자에게 그 결과가 보고된 경우에 대해서
+
+  지급한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제17조 제4항 제4호
+scope:
+- 보건의료인 정의
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:22.795098+00:00'

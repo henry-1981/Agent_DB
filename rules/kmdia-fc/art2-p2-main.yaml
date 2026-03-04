@@ -1,0 +1,22 @@
+rule_id: kmdia-fc-art2-p2-main
+text: '② 사업자 및 판매업자 등은 보건의료인에게 제품에
+
+  대한 과학적·교육적인 정보를 전달하고 환자의 이익을
+
+  극대화하기 위해 노력하여야 한다. 다만, 사업자 및 판
+
+  매업자 등의 이러한 노력이 보건의료인이 의료기기를
+
+  의료행위에 사용하도록 선정할 때 보장되는 결정의 독
+
+  립성을 침해하여서는 아니 된다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제2조 제2항
+scope:
+- 보건의료인 정의
+- 위탁 판매
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:29.382970+00:00'

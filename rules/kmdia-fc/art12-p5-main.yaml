@@ -1,0 +1,19 @@
+rule_id: kmdia-fc-art12-p5-main
+text: '⑤ 사업자가 제4항에 따른 교육·훈련 개최 승인을 신
+
+  청하는 경우, 사업자는 협회에 심의비 20만원(VAT별
+
+  도)을 납부하여야 한다. 단, 심의된 개최계획의 단순
+
+  변경(개최일, 장소변경 등)신고는 변경신고와 심의비
+
+  가 면제된다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제12조 제5항
+scope:
+- 기부 후 신고 의무
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:12.736273+00:00'

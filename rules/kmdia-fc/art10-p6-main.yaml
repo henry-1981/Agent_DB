@@ -1,0 +1,20 @@
+rule_id: kmdia-fc-art10-p6-main
+text: '⑥ 규약 제9조 제3항 제2호와 관련하여 협회는
+
+  1,4,7,10월에 전 분기 학술대회 참가자 지원 내역(학
+
+  술대회명, 학술대회 주최자, 지원 사업자명, 지원총액,
+
+  지원자수, 지원자 소속 의료기관명 등)을 협회 홈페이
+
+  지에 게재한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제10조 제6항
+scope:
+- 의료기관 개설자
+- 의료기관 종사자
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:07.347052+00:00'

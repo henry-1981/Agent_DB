@@ -1,0 +1,21 @@
+rule_id: kmdia-fc-art17-p3-main
+text: '③ 사업자가 의료기관 등이 주관하는 학술대회 또는
+
+  의료기관 등이 발행하는 광고매체 등에 자사 및 자사
+
+  의료기기를 전시·홍보·광고하려는 목적으로 전시대나
+
+  부스를 설치하거나 광고를 하는 경우 그 비용의 지급
+
+  은 정상적인 거래관행에 부합하여야 한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제17조 제3항
+scope:
+- 사회통념상 정상적 상관례
+- 의료기관 개설자
+- 의료기관 종사자
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:22.518637+00:00'

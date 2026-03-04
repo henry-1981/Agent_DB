@@ -1,0 +1,21 @@
+rule_id: kmdia-fc-art5-p5-main
+text: '⑤ 규약 제8조 제3항의 자기부담에 포함되는 수입항
+
+  목은 학술대회와 관련한 등록비(또는 참가비) 및 학회
+
+  자체 예산 중 사업자나 의료기기 회사로부터 제공받는
+
+  경제적 이익이 아닌것(예:회원의 회비)으로 해당 학술
+
+  대회를 지원하기 위한 것을 말한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제5조 제5항
+scope:
+- 간주 제공 원칙
+- 직접 기부 금지
+- 기부 후 신고 의무
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:52.710357+00:00'

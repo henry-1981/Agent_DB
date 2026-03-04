@@ -1,0 +1,19 @@
+rule_id: kmdia-fc-art6-p5-item3
+text: '3. 식대는 학술대회 숙박기간 동안에 1일 3식 지원으
+
+  로 식사시간대에 현지 식당에서 개인카드 또는 현금으
+
+  로 결재한 영수증을 1식 1장 최대 10만원, 1일 총 15
+
+  만원이내로 지원한다. 단, 현금결제 시 사유서와 영수
+
+  증을 제출하여야 한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제6조 제5항 제3호
+scope:
+- 최소 기간 1개월 이내 제한
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:56.980596+00:00'

@@ -1,0 +1,14 @@
+rule_id: kmdia-fc-art10-p1-item3
+text: '3. 시장조사에 참여한 보건의료인에게 10만원 이내의
+
+  식음료 또는 답례품을 제공할 수 있다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제10조 제1항 제3호
+scope:
+- 간주 제공 원칙
+- 보건의료인 정의
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:05.885829+00:00'

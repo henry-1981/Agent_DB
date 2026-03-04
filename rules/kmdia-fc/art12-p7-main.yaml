@@ -1,0 +1,20 @@
+rule_id: kmdia-fc-art12-p7-main
+text: '⑦ 규약 제11조 제5항의 경우 사업자는 각 보건의료
+
+  인에 대하여 1일 10만원 이내의 식음료(월 최대 4회)
+
+  및 자사의 회사명 또는 제품명이 기입된 1만원 이하의
+
+  판촉물을 제공할 수 있다. 단, 식음료는 동일 보건의
+
+  료인에게 규약 제10조의 제품설명회 경우를 포함하여
+
+  월 4회를 초과하여 제공할 수 없다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제12조 제7항
+scope:
+- 간주 제공 원칙
+authority: regulation
+status: draft

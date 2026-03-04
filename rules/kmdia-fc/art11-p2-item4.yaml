@@ -1,0 +1,16 @@
+rule_id: kmdia-fc-art11-p2-item4
+text: '4. 사업자는 연구계약을 맺은 의료기관 등으로부터 해
+
+  당 연구에 대한 결과보고서를 확보하여 관련 비용의
+
+  회계처리 시 이를 첨부하여야 한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제11조 제2항 제4호
+scope:
+- 의료기관 개설자
+- 의료기관 종사자
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:08.450113+00:00'

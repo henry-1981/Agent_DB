@@ -1,0 +1,18 @@
+rule_id: kmdia-fc-art11-p1-main
+text: '① 사업자는 국내 또는 국외에서 의료기관 소속 보건
+
+  의료인, 시술 및 진단 관련 종사자를 대상으로, 자사의
+
+  의료기기와 관련한 시술 및 진단기술의 습득·향상을
+
+  위한 교육·훈련을 실시할 수 있다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제11조 제1항
+scope:
+- 의료기관 개설자
+- 의료기관 종사자
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:07.900067+00:00'

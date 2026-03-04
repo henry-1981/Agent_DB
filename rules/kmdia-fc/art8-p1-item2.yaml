@@ -1,0 +1,12 @@
+rule_id: kmdia-fc-art8-p1-item2
+text: '2. 한국의료기기산업협회가 인정한 학회(해외학회포
+
+  함), 학술기관·단체 또는 연구기관·단체'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제8조 제1항 제2호
+scope:
+- 2. 관련 규정
+authority: regulation
+status: draft

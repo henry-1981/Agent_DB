@@ -1,0 +1,13 @@
+rule_id: kmdia-fc-art4-p4-item6
+text: '6. 협회는 사업자에게 심의비등에 대한 전자세금계산
+
+  서를 발행한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제4조 제4항 제6호
+scope:
+- 6. 관련 규정
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:49.467838+00:00'

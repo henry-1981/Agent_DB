@@ -1,0 +1,21 @@
+rule_id: kmdia-fc-art1-p1-main
+text: '① 본 『의료기기 거래에 관한 공정경쟁규약』(이하 “본
+
+  규약”이라 한다)은 독점규제 및 공정거래에 관한 법률
+
+  (이하 “공정거래법”이라 한다) 제23조 제1항 제3호에서
+
+  규율하고 있는 부당한 고객유인행위를 지양함으로써,
+
+  사업자 간의 공정한 의료기기 유통 경쟁 질서를 확보하
+
+  고 국민건강을 유지·개선시켜 나감을 목적으로 한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제1조 제1항
+scope:
+- ① 관련 규정
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:05.087113+00:00'

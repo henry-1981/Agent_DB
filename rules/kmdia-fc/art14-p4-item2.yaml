@@ -1,0 +1,10 @@
+rule_id: kmdia-fc-art14-p4-item2
+text: 2. 위원장이 필요하다고 인정할 때
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제14조 제4항 제2호
+scope:
+- 2. 관련 규정
+authority: regulation
+status: draft

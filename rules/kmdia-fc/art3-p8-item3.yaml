@@ -1,0 +1,15 @@
+rule_id: kmdia-fc-art3-p8-item3
+text: '3. 향응(음식물, 영화·연극 등 각종 공연 및 스포츠·여
+
+  행·골프·스키등 각종 행사에 대한 초대 또는 우대를 포
+
+  함한다)'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제3조 제8항 제3호
+scope:
+- 3. 관련 규정
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:42.006251+00:00'

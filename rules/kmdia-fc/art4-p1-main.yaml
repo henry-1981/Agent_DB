@@ -1,0 +1,15 @@
+rule_id: kmdia-fc-art4-p1-main
+text: '① 한국의료기기산업협회(이하 “협회”라 한다)는 본
+
+  규약의 취지를 반영해 규약의 세부사항에 관하여 세부
+
+  운용기준(이하 “운용기준”이라 한다)을 정할 수 있다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제4조 제1항
+scope:
+- ① 관련 규정
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:46.115112+00:00'

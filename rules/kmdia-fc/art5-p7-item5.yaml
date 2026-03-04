@@ -1,0 +1,15 @@
+rule_id: kmdia-fc-art5-p7-item5
+text: '5. 사업자는 학술대회 참가지원 경비의 회계처리 시
+
+  관련 학술대회의 주최자, 내용, 대상, 지원금액 등에
+
+  대한 구체적인 증빙자료를 첨부하여야 한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제5조 제7항 제5호
+scope:
+- 기부금품 회계처리 시 증빙 의무
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:54.973806+00:00'

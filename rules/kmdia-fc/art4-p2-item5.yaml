@@ -1,0 +1,20 @@
+rule_id: kmdia-fc-art4-p2-item5
+text: '5. 사업자는 기부금품 전달이 완료된 후 기부행위의
+
+  일자·대상·목적·규모 등 기부 관련 사실을 협회에서 정
+
+  한 양식에 따라 기부금품 전달일 기준 10일 이내에 협
+
+  회에 통보하여야 한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제4조 제2항 제5호
+scope:
+- 기부행위 허용 원칙
+- 직접 기부 금지
+- 기부행위 금지 조건
+- 기부 후 신고 의무
+- 기부금품 전달 완료 후 10일 이내 협회 통보
+authority: regulation
+status: draft

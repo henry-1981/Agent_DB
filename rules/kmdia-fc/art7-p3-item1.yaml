@@ -1,0 +1,21 @@
+rule_id: kmdia-fc-art7-p3-item1
+text: '1. 수회 반복적인 사용이 가능한 제품의 평가 기간을
+
+  포함한 평가조건은 사전에 서면으로 명시되어야 하며,
+
+  사업자 및 판매업자 등은 의료기관으로부터 해당 인수
+
+  증을 받아야 한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제7조 제3항 제1호
+scope:
+- 기부행위 금지 조건
+- 의료기관 개설자
+- 의료기관 종사자
+- 위탁 판매
+- 서면 평가조건 명시 및 인수증
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:58.778158+00:00'

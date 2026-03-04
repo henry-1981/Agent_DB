@@ -1,0 +1,15 @@
+rule_id: kmdia-fc-art3-p3-main
+text: '③ "수리업자“라 함은 의료기기법 제16조에 의거 의료
+
+  기기의 수리업 신고를 한 후 의료기기의 수리업을 영
+
+  위하는 자를 말한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제3조 제3항
+scope:
+- 기부 후 신고 의무
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:40.116477+00:00'

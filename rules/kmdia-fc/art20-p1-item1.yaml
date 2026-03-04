@@ -1,0 +1,10 @@
+rule_id: kmdia-fc-art20-p1-item1
+text: 1. 경고
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제20조 제1항 제1호
+scope:
+- 1. 관련 규정
+authority: regulation
+status: draft

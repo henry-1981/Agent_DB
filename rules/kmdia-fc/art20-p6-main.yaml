@@ -1,0 +1,13 @@
+rule_id: kmdia-fc-art20-p6-main
+text: '⑥ 실무단은 위원회 재적위원 2분의 1이상 출석에 출
+
+  석위원 과반수의 찬성으로 의결하여 구성한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제20조 제6항
+scope:
+- ⑥ 관련 규정
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:32.694719+00:00'

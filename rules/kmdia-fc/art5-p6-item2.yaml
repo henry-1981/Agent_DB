@@ -1,0 +1,17 @@
+rule_id: kmdia-fc-art5-p6-item2
+text: '2. 규약 제8조 제4항에 따른 국내개최 국제학술대회의
+
+  경우, 학술대회 주관자는 규약 제8조 제6항에 따라 반
+
+  환해야 할 잔액을 해당 학술대회를 지원한 각 사업자
+
+  가 차지하는 지원금 비율에 따라 환불하여야 한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제5조 제6항 제2호
+scope:
+- 2. 관련 규정
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:53.314238+00:00'

@@ -1,0 +1,13 @@
+rule_id: kmdia-fc-art3-p8-item2
+text: '2. 금전, 예금증서, 상품권, 기타 유가증권 및 각종 명
+
+  목의 지불이행 각서'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제3조 제8항 제2호
+scope:
+- 2. 관련 규정
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:41.743900+00:00'

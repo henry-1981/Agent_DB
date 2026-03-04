@@ -1,0 +1,15 @@
+rule_id: kmdia-fc-art10-p2-item6
+text: '6. 정산시 적용환율은 학술대회 시작 전일(휴일인 경
+
+  우 직전 영업일) 외환은행 현금매입 최초고시가 환율
+
+  을 적용한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제10조 제2항 제6호
+scope:
+- 6. 관련 규정
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:06.744975+00:00'

@@ -1,0 +1,22 @@
+rule_id: kmdia-fc-art10-p2-main
+text: '② 제1항의 제품설명회 개최에 앞서 제품설명회에 참
+
+  가하는 보건의료인에게 숙박을 제공하는 것이 예정된
+
+  위한 숙소-행사장간의 교통비(1일 왕복 1회 한정)로
+
+  학술대회 기간내 1인 최대 15만원까지로서, 이용시간,
+
+  출발지 및 도착지가 명기된 영수증으로 증빙되는 경우
+
+  에 한 한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제10조 제2항
+scope:
+- 간주 제공 원칙
+- 보건의료인 정의
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:07.057125+00:00'

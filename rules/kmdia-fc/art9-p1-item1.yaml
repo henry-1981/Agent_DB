@@ -1,0 +1,13 @@
+rule_id: kmdia-fc-art9-p1-item1
+text: '1. 의학·의료기기 관련 학술연구를 목적으로 설립된
+
+  비영리법인'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제9조 제1항 제1호
+scope:
+- 1. 관련 규정
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:45:03.864918+00:00'

@@ -1,0 +1,18 @@
+rule_id: kmdia-fc-art2-p4-main
+text: '④ 회계기록 기타 재무관리는 관련법령과 일반적으로
+
+  인정되는 회계원칙 등에 따라 사실에 근거하여 정확하
+
+  고 투명하게 기록·관리하여야 한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제2조 제4항
+scope:
+- 기부행위 허용 원칙
+- 견본품 제공 일반 원칙
+- 간주 제공 원칙
+- 법령 기반 예외
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:29.897875+00:00'

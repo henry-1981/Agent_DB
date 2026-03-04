@@ -1,0 +1,19 @@
+rule_id: kmdia-fc-art10-p1-item1
+text: '1. 여비, 숙박, 식음료 및 기념품의 제공대상은 제품설
+
+  명회와 직접 관련이 있는 보건의료인에 한하고, 보건
+
+  의료인의 동반자에 대한 제공은 허용되지 아니한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제10조 제1항 제1호
+scope:
+- 기부행위 허용 원칙
+- 간주 제공 원칙
+- 직접 기부 금지
+- 보건의료인 정의
+- 금품류 제공 제한 대상
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:05.367613+00:00'

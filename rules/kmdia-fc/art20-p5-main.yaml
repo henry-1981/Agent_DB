@@ -1,0 +1,13 @@
+rule_id: kmdia-fc-art20-p5-main
+text: '⑤ 위원회의 운영, 조사, 조치 등에 관하여 기타 필요
+
+  한 사항은 별도의 운용기준에서 정한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제20조 제5항
+scope:
+- ⑤ 관련 규정
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:32.439440+00:00'

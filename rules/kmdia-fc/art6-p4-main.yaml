@@ -1,0 +1,21 @@
+rule_id: kmdia-fc-art6-p4-main
+text: '④ 협회는 학술대회 종료 후 학술대회 주최자측로부터
+
+  규약 제9조 제2항 제2호에서의 실비의 교통비, 등록
+
+  비, 식대, 숙박비에 대한 증빙자료와 함께 실비정산내
+
+  역서를 받아 검토하여 이를 사업자에게 통지하고 지원
+
+  금을 협회로 납부하도록 하여 학술대회 주최자측에게
+
+  전달한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제6조 제4항
+scope:
+- ④ 관련 규정
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:56.042084+00:00'

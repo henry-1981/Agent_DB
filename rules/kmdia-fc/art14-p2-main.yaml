@@ -1,0 +1,22 @@
+rule_id: kmdia-fc-art14-p2-main
+text: '② 사업자는 주로 시장에 관한 자료를 수집할 목적으
+
+  로 시장조사를 하여야 하고, 시장조사를 보건의료인에
+
+  대한 판촉활동 또는 보상의 수단으로 활용·가장하여
+
+  서는 아니되며, 시장조사기관을 통하지 아니하고 직접
+
+  수행하는 경우, 사업자는 보건의료인에게 금품류를 제
+
+  공할 수 없다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제14조 제2항
+scope:
+- 직접 기부 금지
+- 보건의료인 정의
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:16.179932+00:00'

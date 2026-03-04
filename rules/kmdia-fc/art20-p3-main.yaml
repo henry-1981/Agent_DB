@@ -1,0 +1,13 @@
+rule_id: kmdia-fc-art20-p3-main
+text: '③ 위원회 의결은 재적위원 3분의 2 이상의 출석과 출
+
+  석위원 과반수의 찬성으로 의결한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제20조 제3항
+scope:
+- ③ 관련 규정
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:31.338224+00:00'

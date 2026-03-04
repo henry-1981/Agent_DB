@@ -1,0 +1,15 @@
+rule_id: kmdia-fc-art5-p7-item1
+text: '1. 제1항의 국내외 학술대회는 학술적ㆍ교육적 목적
+
+  에 부합하는 내용과 방식으로 적절한 장소에서 개최되
+
+  는 학술대회로 한정한다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제5조 제7항 제1호
+scope:
+- 1. 관련 규정
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:53.836817+00:00'

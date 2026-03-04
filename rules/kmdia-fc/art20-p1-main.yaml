@@ -1,0 +1,23 @@
+rule_id: kmdia-fc-art20-p1-main
+text: '① 위원회는 본 규약을 위반하는 행위가 있다고 인정
+
+  될 때에는 그 위반행위를 한 사업자에게 그 위반행위
+
+  를 시정하기 위한 필요한 조치를 취해야 한다는 취지,
+
+  그 위반행위와 같거나 또는 유사한 위반행위를 하여서
+
+  는 아니된다는 취지, 기타 이들에 관련된 사항을 시행
+
+  하도록 하기 위해 다음 각 호의 1과 같은 조치 등을 취
+
+  할 수 있다.'
+source_ref:
+  document: kmdia-fc
+  version: '2022.04'
+  location: 제20조 제1항
+scope:
+- ① 관련 규정
+authority: regulation
+status: verified
+verified_at: '2026-03-04T07:44:30.829340+00:00'
