@@ -97,3 +97,54 @@ def validate_relation(
         errors.append(f"Schema error: {e.message}")
 
     return {"valid": len(errors) == 0, "errors": errors, "relation": data}
+
+
+def create_relation(
+    relation_id: str,
+    rel_type: str,
+    source_rule: str,
+    target_rule: str,
+    condition: str,
+    resolution: str,
+    authority_basis: str,
+    registered_by: str,
+    root: Path | None = None,
+) -> Path:
+    """Create a new relation YAML file with schema validation.
+
+    Creates with status=draft. Use approve_relation() to approve.
+
+    Raises:
+        ValueError: if relation_id already exists.
+        jsonschema.ValidationError: if data fails schema validation.
+    """
+    base = root or ROOT
+    rel_dir = base / "relations"
+    rel_dir.mkdir(parents=True, exist_ok=True)
+
+    # Check duplicate
+    existing = _find_relation_file(relation_id, base)
+    if existing is not None:
+        raise ValueError(f"Relation '{relation_id}' already exists: {existing}")
+
+    data = {
+        "relation_id": relation_id,
+        "type": rel_type,
+        "source_rule": source_rule,
+        "target_rule": target_rule,
+        "condition": condition,
+        "resolution": resolution,
+        "authority_basis": authority_basis,
+        "registered_by": registered_by,
+        "status": "draft",
+    }
+
+    # Validate against schema before writing
+    schema = _load_relation_schema(base)
+    jsonschema.validate(data, schema)
+
+    filepath = rel_dir / f"{relation_id}.yaml"
+    with open(filepath, "w", encoding="utf-8") as f:
+        yaml.dump(data, f, allow_unicode=True, default_flow_style=False, sort_keys=False)
+
+    return filepath

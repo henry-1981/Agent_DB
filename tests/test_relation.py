@@ -6,7 +6,9 @@ from pathlib import Path
 import pytest
 import yaml
 
-from relation import list_relations, validate_relation
+import jsonschema
+
+from relation import create_relation, list_relations, validate_relation
 
 SCHEMA_SRC = Path(__file__).resolve().parent.parent / "schemas" / "rule-relation.schema.yaml"
 
@@ -135,3 +137,63 @@ class TestValidateRelation:
 
         result = validate_relation("rel-bad-003", root=tmp_path)
         assert result["valid"] is False
+
+
+class TestCreateRelation:
+    def test_create_valid_relation(self, tmp_path):
+        rel_dir = tmp_path / "relations"
+        rel_dir.mkdir()
+        _copy_schema(tmp_path)
+
+        path = create_relation(
+            relation_id="rel-new-001",
+            rel_type="excepts",
+            source_rule="doc-art2-p1-main",
+            target_rule="doc-art1-p1-main",
+            condition="Test condition for new relation",
+            resolution="Apply source rule when condition is met",
+            authority_basis="Art2 delegates from Art1",
+            registered_by="HB",
+            root=tmp_path,
+        )
+
+        assert path is not None
+        assert path.exists()
+
+        with open(path) as f:
+            data = yaml.safe_load(f)
+        assert data["relation_id"] == "rel-new-001"
+        assert data["type"] == "excepts"
+        assert data["status"] == "draft"
+
+    def test_create_duplicate_relation_id_fails(self, rel_env):
+        with pytest.raises(ValueError, match="already exists"):
+            create_relation(
+                relation_id="rel-test-001",
+                rel_type="excepts",
+                source_rule="x",
+                target_rule="y",
+                condition="Duplicate test condition",
+                resolution="Duplicate test resolution here",
+                authority_basis="test",
+                registered_by="HB",
+                root=rel_env,
+            )
+
+    def test_create_invalid_type_fails(self, tmp_path):
+        rel_dir = tmp_path / "relations"
+        rel_dir.mkdir()
+        _copy_schema(tmp_path)
+
+        with pytest.raises(jsonschema.ValidationError):
+            create_relation(
+                relation_id="rel-bad-type",
+                rel_type="invalid",
+                source_rule="x",
+                target_rule="y",
+                condition="Test condition here",
+                resolution="Test resolution text here",
+                authority_basis="test",
+                registered_by="HB",
+                root=tmp_path,
+            )
