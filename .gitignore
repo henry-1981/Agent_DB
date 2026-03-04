@@ -6,3 +6,6 @@ __pycache__/
 *.pdf
 docs/plans/
 council.config.yaml
+config/gdrive-credentials.json
+config/gdrive-token.json
+staging/

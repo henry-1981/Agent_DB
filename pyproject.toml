@@ -11,7 +11,10 @@ dependencies = [
 dev = ["pytest>=8.0"]
 pdf = ["pymupdf>=1.24"]
 llm = ["anthropic>=0.40"]
-all = ["pymupdf>=1.24", "anthropic>=0.40"]
+mcp = ["fastmcp>=2.0"]
+gdrive = ["google-api-python-client>=2.0", "google-auth-oauthlib>=1.0", "google-auth-httplib2>=0.2"]
+all = ["pymupdf>=1.24", "anthropic>=0.40", "fastmcp>=2.0",
+       "google-api-python-client>=2.0", "google-auth-oauthlib>=1.0", "google-auth-httplib2>=0.2"]
 
 [tool.setuptools]
 packages = []
