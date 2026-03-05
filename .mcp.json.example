@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "rule-db": {
+      "command": "python3.11",
+      "args": ["mcp/server.py"],
+      "env": {
+        "RULE_DB_ROOT": "/path/to/Agent-DB"
+      }
+    }
+  }
+}

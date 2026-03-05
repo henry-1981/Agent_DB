@@ -9,3 +9,5 @@ council.config.yaml
 config/gdrive-credentials.json
 config/gdrive-token.json
 staging/
+.mcp.json
+docs/fusion-strategy-known-unknown.md
