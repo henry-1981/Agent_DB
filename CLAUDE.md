@@ -254,14 +254,17 @@ pytest tests/
 pytest tests/test_clean.py::TestFilterP4P7::test_page_number_patterns  # 단일 테스트
 ```
 
-## Current State (2026-03-04)
+## Current State (2026-03-05)
 
 - **234 Rule Units** (kmdia-fc 229 + kmdia-fc-detail 5)
   - 23 approved (kmdia-fc 18 + kmdia-fc-detail 5)
   - 197 verified (G1 통과, G2 대기)
   - 14 draft (G1 중복 텍스트 reject)
 - **5 approved Rule Relations** (excepts 4 + unresolved 1)
-- **430 tests** 전부 통과 (기존 1건 pre-existing failure 제외)
+- **458 tests** 전부 통과 (기존 1건 pre-existing failure 제외)
+- **Rule DB MCP Server** — 읽기 전용 4개 tool (search_rules, get_rule, get_context, cite_rule)
+  - `_filter_rule` / `_filter_relation` 가시성 헬퍼 중앙집중화
+  - `RULE_DB_ROOT` env var 지원 (retrieve.py, context.py 통합)
 - **도메인 플러그인** Phase B 완료 (domains/ra/)
 - **test-legal 도메인** E2E 검증 완료 (domains/test-legal/) — 도메인 격리 실증
 - **retrieve.py multi-field 검색** — scope+text IDF 가중 스코어링, fuzzy 매칭, relation 보너스
@@ -273,6 +276,21 @@ pytest tests/test_clean.py::TestFilterP4P7::test_page_number_patterns  # 단일 
 - **Relation CLI** — `scripts/relation.py` (목록·검증·생성·승인)
 - **GDrive Connector** — Google Drive 폴더 → 로컬 staging 증분 동기화 + pipeline 연동
 - **README.md** — 프로젝트 개요 + GDrive 설정 가이드
+
+### Rule DB MCP Server
+
+```
+mcp/
+  server.py                    # FastMCP 서버 (읽기 전용 4개 tool)
+                               # search_rules: multi-field IDF 검색
+                               # get_rule: 단건 조회 (status 가시성 필터)
+                               # get_context: 계층+관계 포함 전체 맥락
+                               # cite_rule: 상태별 인용 포맷
+```
+
+- `_filter_rule()` / `_filter_relation()`: draft/rejected 숨김 + public 필드만 노출
+- `RULE_DB_ROOT` env var로 DB 경로 주입 (retrieve.py, context.py 동일 패턴)
+- 의존성: `fastmcp`
 
 ### Ingestion Pipeline
 
@@ -323,4 +341,4 @@ scripts/gdrive_sync.py         # GDrive → Pipeline CLI (--folder-url | --confi
 - 커밋 메시지: 한국어, conventional commit
 - 코드 코멘트: 영어
 - Python ≥ 3.11
-- 의존성: pymupdf, pyyaml, anthropic, pytest, jsonschema, google-api-python-client (optional)
+- 의존성: pymupdf, pyyaml, anthropic, pytest, jsonschema, fastmcp, google-api-python-client (optional)
