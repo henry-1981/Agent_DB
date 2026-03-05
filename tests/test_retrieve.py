@@ -10,13 +10,14 @@ import pytest
 from retrieve import (
     search_rules,
     format_citation,
+    get_rule_by_id,
     StatusFilter,
     _keyword_match,
     _scope_score,
     _text_score,
     _compute_idf,
     _relation_bonus,
-    _load_relations,
+    load_relations,
     RELATION_BONUS_CAP,
 )
 
@@ -398,7 +399,7 @@ class TestLoadRelations:
         }
         with open(rel_dir / "rel-bad-001.yaml", "w") as f:
             yaml.dump(data, f)
-        result = _load_relations(tmp_path)
+        result = load_relations(tmp_path)
         assert len(result) == 0
 
     def test_skip_short_condition(self, tmp_path):
@@ -415,7 +416,7 @@ class TestLoadRelations:
         }
         with open(rel_dir / "rel-bad-002.yaml", "w") as f:
             yaml.dump(data, f)
-        result = _load_relations(tmp_path)
+        result = load_relations(tmp_path)
         assert len(result) == 0
 
     def test_valid_condition_loaded(self, tmp_path):
@@ -432,7 +433,7 @@ class TestLoadRelations:
         }
         with open(rel_dir / "rel-ok-001.yaml", "w") as f:
             yaml.dump(data, f)
-        result = _load_relations(tmp_path)
+        result = load_relations(tmp_path)
         assert len(result) == 1
 
 
@@ -467,6 +468,63 @@ class TestThresholdValidation:
 
 
 # ========== Integration Tests ==========
+
+
+class TestGetRuleById:
+    """Tests for get_rule_by_id() direct unit tests."""
+
+    @classmethod
+    def _write_rule(cls, tmp_path: Path, rule_id: str, status: str = "approved", **extra):
+        rules_dir = tmp_path / "rules"
+        rules_dir.mkdir(parents=True, exist_ok=True)
+        rule = {
+            "rule_id": rule_id,
+            "text": f"테스트 규칙 {rule_id}",
+            "source_ref": {"document": "test", "version": "1.0", "location": "1조"},
+            "scope": ["테스트 범위"],
+            "authority": "regulation",
+            "status": status,
+        }
+        rule.update(extra)
+        (rules_dir / f"{rule_id}.yaml").write_text(
+            yaml.dump(rule, allow_unicode=True)
+        )
+
+    def test_found_returns_all_fields(self, tmp_path):
+        self._write_rule(tmp_path, "found-rule")
+        result = get_rule_by_id("found-rule", root=tmp_path)
+        assert result is not None
+        for field in ("rule_id", "text", "source_ref", "scope", "authority", "status"):
+            assert field in result
+        assert result["rule_id"] == "found-rule"
+
+    def test_not_found_returns_none(self, tmp_path):
+        (tmp_path / "rules").mkdir(parents=True, exist_ok=True)
+        result = get_rule_by_id("nonexistent", root=tmp_path)
+        assert result is None
+
+    def test_returns_any_status(self, tmp_path):
+        """All 6 statuses are returned — status filtering is MCP layer responsibility."""
+        for status in ("draft", "verified", "approved", "suspended", "superseded", "rejected"):
+            self._write_rule(tmp_path, f"rule-{status}", status=status)
+        for status in ("draft", "verified", "approved", "suspended", "superseded", "rejected"):
+            result = get_rule_by_id(f"rule-{status}", root=tmp_path)
+            assert result is not None, f"Expected rule-{status} to be returned"
+            assert result["status"] == status
+
+    def test_respects_explicit_root(self, tmp_path):
+        """root parameter overrides module-level ROOT."""
+        custom = tmp_path / "custom"
+        custom.mkdir()
+        self._write_rule(custom, "custom-rule")
+        result = get_rule_by_id("custom-rule", root=custom)
+        assert result is not None
+        assert result["rule_id"] == "custom-rule"
+
+    def test_empty_rules_directory(self, tmp_path):
+        (tmp_path / "rules").mkdir(parents=True, exist_ok=True)
+        result = get_rule_by_id("any-id", root=tmp_path)
+        assert result is None
 
 
 class TestIntegration:

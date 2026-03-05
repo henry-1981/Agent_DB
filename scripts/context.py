@@ -7,12 +7,17 @@ Loads traceability/*.yaml and provides structural hierarchy queries:
 - get_context(rule_id)  -> dict with parent, children, siblings
 """
 
+import os
 import sys
 from pathlib import Path
 
 import yaml
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = (
+    Path(os.environ["RULE_DB_ROOT"])
+    if os.environ.get("RULE_DB_ROOT")
+    else Path(__file__).resolve().parent.parent
+)
 TRACE_DIR = ROOT / "traceability"
 
 

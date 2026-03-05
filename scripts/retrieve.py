@@ -13,6 +13,7 @@ Citation rules per CLAUDE.md:
 """
 
 import math
+import os
 import sys
 from difflib import SequenceMatcher
 from enum import Enum
@@ -22,7 +23,11 @@ import yaml
 
 from domain import resolve_domain
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = (
+    Path(os.environ["RULE_DB_ROOT"])
+    if os.environ.get("RULE_DB_ROOT")
+    else Path(__file__).resolve().parent.parent
+)
 
 # Scoring weights
 WEIGHT_SCOPE = 0.6
@@ -143,7 +148,7 @@ def _compute_idf(keywords: list[str], rules: list[dict]) -> dict[str, float]:
     return idf
 
 
-def _load_relations(root: Path) -> list[dict]:
+def load_relations(root: Path) -> list[dict]:
     """Load approved relations from relations/ directory."""
     rel_dir = root / "relations"
     relations = []
@@ -207,6 +212,16 @@ def _match_score(
     return base + bonus
 
 
+def get_rule_by_id(rule_id: str, root: Path | None = None) -> dict | None:
+    """Load a single rule by rule_id. Returns None if not found."""
+    base = root or ROOT
+    rules = _load_rules(base)
+    for rule in rules:
+        if rule.get("rule_id") == rule_id:
+            return rule
+    return None
+
+
 def search_rules(
     query: str,
     root: Path | None = None,
@@ -226,7 +241,7 @@ def search_rules(
     idf_weights = _compute_idf(keywords, rules)
 
     # Load relations if requested
-    relations = _load_relations(base) if include_relations else []
+    relations = load_relations(base) if include_relations else []
 
     results = []
     for rule in rules:
